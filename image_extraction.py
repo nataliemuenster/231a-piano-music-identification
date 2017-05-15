@@ -9,6 +9,7 @@ import cv2
 #change output image names according to each video
 def parse_video(video):
 	print "Parse_video:", video
+	return
 	#In command line I used: "ffmpeg  -r 30 -i ../video_1.mp4 -qscale:v 2 -f image2 video_1-%04d.jpg"
 
 	#If we need to include this parsing in our code, here is how to do it in python:
@@ -21,7 +22,7 @@ def sobel(img): #one at a time? or do all at once?
 	delta = 0
 	ddepth = cv2.CV_16S
 
-	img = cv2.imread(img)
+	#img = cv2.imread(img)
 	img = cv2.GaussianBlur(img,(3,3),0) #idk what these numbers mean
 	gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
@@ -38,8 +39,7 @@ def sobel(img): #one at a time? or do all at once?
 
 	dst = cv2.addWeighted(abs_grad_x,0.5,abs_grad_y,0.5,0)
 
-
 	#cv2.imshow("cropped", crop_img)
 	#cv2.waitKey(0)
-	return img
+	return dst
 
