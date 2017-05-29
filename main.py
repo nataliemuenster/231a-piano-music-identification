@@ -1,6 +1,6 @@
 import os, sys
 import numpy as np
-import image_extraction
+import preprocess
 from scipy.misc import imread
 import cv2
 print cv2.__version__
@@ -37,15 +37,8 @@ if __name__ == '__main__':
     #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
 
     #get the sobel of just the baseline image (no hands) to get lines then Hough transform
-    base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
-    base_img = base_img.astype(np.uint8)
-    img_sobel = image_extraction.sobel(base_img)
-
-    cv2.imwrite("video_2-0001_sobel.jpg", img_sobel)
-    #apply thresholding to binarize image: http://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html
-    thresh, img_binary = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    cv2.imwrite("video_2-0001_binary.jpg", img_binary)
-    theta = image_extraction.hough(img_binary)
+    base_img, best_lines = preprocess.getLines(os.path.join(images_dir,base_img_name))
+    
  	
 
     #loops through all the images in the video directory
