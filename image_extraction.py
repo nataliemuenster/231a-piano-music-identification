@@ -16,6 +16,8 @@ def parse_video(video):
 	return
 	#In command line I used: "ffmpeg  -r 30 -i ../video_1.mp4 -qscale:v 2 -f image2 video_1-%04d.jpg"
 
+    #We should definitely look into this to crop https://video.stackexchange.com/questions/4563/how-can-i-crop-a-video-with-ffmpeg
+
 	#If we need to include this parsing in our code, here is how to do it in python:
 	#ff = ffmpy.FFmpeg(inputs={"ffmpeg -r 30 -i video_1.mp4 -f image2 video_1-%d.jpg"}, outputs={})
 
@@ -49,7 +51,10 @@ def sobel(img): #one at a time? or do all at once?
 
 
 def compute_gradient(im):
-    H, W = im.shape
+    print "im.shape", im.shape
+    H = im.shape[0]
+    W = im.shape[1]
+
     xgrad = np.zeros((H-2, W-2))
     ygrad = np.zeros((H-2, W-2))
     
@@ -64,7 +69,9 @@ def compute_gradient(im):
 
 
 def generate_histogram(angles, magnitudes, nbins = 9):
+    print angles.shape
     histogram = np.zeros(nbins)
+    
     
     bin_size = float(180 / nbins)
     
@@ -74,6 +81,8 @@ def generate_histogram(angles, magnitudes, nbins = 9):
             ang = angles[h,w]
             mag = magnitudes[h,w]
             
+            print angles.shape
+            print ang.shape
             if ang >= 180:
                 ang = ang - 180
             
