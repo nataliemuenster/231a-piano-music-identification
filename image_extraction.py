@@ -14,7 +14,9 @@ import matplotlib.patches as patches
 def parse_video(video):
 	print "Parse_video:", video
 	return
-	#In command line I used: "ffmpeg  -r 30 -i ../video_1.mp4 -qscale:v 2 -f image2 video_1-%04d.jpg"
+	#In command line I used: "ffmpeg  -r 30 -i ../videos/video_1.mp4 -qscale:v 2 -f image2 video_1-%04d.jpg"
+
+ffmpeg  -r 30 -i ../video_2.mp4 -qscale:v 2 -f image2 video_2-%04d.jpg
 
     #We should definitely look into this to crop https://video.stackexchange.com/questions/4563/how-can-i-crop-a-video-with-ffmpeg
 
