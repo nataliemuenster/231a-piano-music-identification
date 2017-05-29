@@ -2,7 +2,7 @@ import os, sys
 import numpy as np
 import image_extraction
 from scipy.misc import imread
-import cv2 #or cv2??
+import cv2
 print cv2.__version__
 
 videos_dir = "./data/videos"
@@ -29,26 +29,24 @@ if __name__ == '__main__':
     images_dir = "./data/" + video_name + "_images"
     if not os.path.exists(images_dir):
         os.mkdir(images_dir)
-
-    #videos = os.listdir(videos_dir)
-    #video = video_name + ".mp4" #do we need to "open" this video at all?
     
     #extract images from frames. Doesn't actually do anything rn...
-    frames = image_extraction.parse_video(video_path)
+    #frames = image_extraction.parse_video(video_path)
     
 
     #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
 
-    #get the sobel of just the baseline image (no hands) to get lines using Sobel then Hough transform
-    '''base_img_name = "video_1-0122.jpg"
-    base_img = cv2.imread(os.path.join(images_dir,base_img_name))
+    #get the sobel of just the baseline image (no hands) to get lines then Hough transform
+    base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
     base_img = base_img.astype(np.uint8)
-    sobel_img = image_extraction.sobel(base_img)
-    sobel_img = cv2.cvtColor(sobel_img, cv2.COLOR_RGB2GRAY) #convert to greyscale to applythresholding to binarize image
+    img_sobel = image_extraction.sobel(base_img)
 
-    cv2.imshow("sobel", sobel_img)
- 	cv2.waitKey(0)
- 	'''
+    cv2.imwrite("video_2-0001_sobel.jpg", img_sobel)
+    #apply thresholding to binarize image: http://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html
+    thresh, img_binary = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    cv2.imwrite("video_2-0001_binary.jpg", img_binary)
+    theta = image_extraction.hough(img_binary)
+ 	
 
     #loops through all the images in the video directory
     '''image_list = os.listdir(images_dir)

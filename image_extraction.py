@@ -25,7 +25,7 @@ def parse_video(video):
 
 
 #from https://github.com/abidrahmank/OpenCV2-Python/blob/master/Official_Tutorial_Python_Codes/3_imgproc/sobel.py
-def sobel(img): #one at a time? or do all at once?
+def sobel(img):
 	scale = 1
 	delta = 0
 	ddepth = cv2.CV_16S
@@ -46,7 +46,11 @@ def sobel(img): #one at a time? or do all at once?
 	abs_grad_y = cv2.convertScaleAbs(grad_y)
 
 	dst = cv2.addWeighted(abs_grad_x,0.5,abs_grad_y,0.5,0)
-
-	#cv2.imshow("cropped", crop_img)
-	#cv2.waitKey(0)
 	return dst
+
+
+def hough(img): #img is a binarized image
+    cv2.HoughLines()    
+    return theta
+
+
