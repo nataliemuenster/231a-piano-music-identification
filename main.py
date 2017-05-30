@@ -35,10 +35,11 @@ if __name__ == '__main__':
     
 
     #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
-    base_img = os.path.join(images_dir,base_img_name)
-    #base_img_rectified = preprocess.rectify(base_img)
+    base_img = base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
+    base_img = base_img.astype(np.uint8)
+    base_img_rectified = preprocess.rectify(base_img)
     #get the sobel of just the baseline image (no hands) to get lines between keys from Hough transform (Right now, key_lines is all lines returned by Hough)
-    base_img, key_lines = preprocess.getLines(base_img) #will use base_img_rectified once i finish rectify
+    key_lines = preprocess.getLines(base_img_rectified) #will use base_img_rectified once i finish rectify
 
 
  	

@@ -15,26 +15,21 @@ def parse_video(video):
 	return
 
 
-'''def rectify(img): #original base_img (img2 of size: 1280x720)
+#Takes in an image of a piano, asks for the 4 corner points, and returns the rectified and cropped image, with consistent ratios of size of black to white keys
+def rectify(img): #original base_img (img2 example is of size: 1280x720)
     #how to make a GUI to show first image and let user click corners:
     size = img.shape
     print size
     pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]) #in x,y
     pts_dst = np.array([[0,0],[0,size[0]],[size[1],0],[size[1],size[0]]]) #in x,y
     h, status = cv2.findHomography(pts_src, pts_dst)
-    return rectified
-    #how to make a GUI to show first image and let user click corners
-    #make both sides be the entire height of the image. 
-    #may be distorted, but ratios will be the same
-    #image rectification with heavy perspective will have a blurry part (more error in parts farther away)
-    #find camera intrinsic parameters
-    #cvFindFundamentalMatrix()
-'''
+    img_rectified = cv2.warpPerspective(img, h, (size[1], size[0]))
+    cv2.imwrite("video_2-0001_rectified.jpg", img_rectified)
+    return img_rectified 
 
 
-def getLines(img): #img is the base_image without hands in it
-    base_img = cv2.imread(img) #a static variable above main
-    base_img = base_img.astype(np.uint8)
+
+def getLines(base_img): #img is the base_image without hands in it
     img_sobel = sobel(base_img)
 
     cv2.imwrite("video_2-0001_sobel.jpg", img_sobel)
@@ -43,7 +38,7 @@ def getLines(img): #img is the base_image without hands in it
     cv2.imwrite("video_2-0001_binary.jpg", img_binary)
     key_lines = hough(img_binary)
     #right now, best lines is all lines returned by Hough
-    return base_img, key_lines
+    return key_lines
 
 
 #from https://github.com/abidrahmank/OpenCV2-Python/blob/master/Official_Tutorial_Python_Codes/3_imgproc/sobel.py
@@ -64,6 +59,7 @@ def sobel(img):
 	abs_grad_y = cv2.convertScaleAbs(grad_y)
 	dst = cv2.addWeighted(abs_grad_x,0.5,abs_grad_y,0.5,0)
 	return dst
+
 
 #http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_houghlines/py_houghlines.html
 def hough(img): #img is a binarized image
