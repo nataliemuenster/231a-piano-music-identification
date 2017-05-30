@@ -35,10 +35,12 @@ if __name__ == '__main__':
     
 
     #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
+    base_img = os.path.join(images_dir,base_img_name)
+    #base_img_rectified = preprocess.rectify(base_img)
+    #get the sobel of just the baseline image (no hands) to get lines between keys from Hough transform (Right now, key_lines is all lines returned by Hough)
+    base_img, key_lines = preprocess.getLines(base_img) #will use base_img_rectified once i finish rectify
 
-    #get the sobel of just the baseline image (no hands) to get lines then Hough transform (Right now, best_lines is all lines returned by Hough)
-    base_img, best_lines = preprocess.getLines(os.path.join(images_dir,base_img_name))
-    
+
  	
 
     #loops through all the images in the video directory

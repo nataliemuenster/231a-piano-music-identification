@@ -9,11 +9,27 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
 
-
 #change output image names according to each video
 def parse_video(video):
 	print "Parse_video:", video
 	return
+
+
+'''def rectify(img): #original base_img (img2 of size: 1280x720)
+    #how to make a GUI to show first image and let user click corners:
+    size = img.shape
+    print size
+    pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]) #in x,y
+    pts_dst = np.array([[0,0],[0,size[0]],[size[1],0],[size[1],size[0]]]) #in x,y
+    h, status = cv2.findHomography(pts_src, pts_dst)
+    return rectified
+    #how to make a GUI to show first image and let user click corners
+    #make both sides be the entire height of the image. 
+    #may be distorted, but ratios will be the same
+    #image rectification with heavy perspective will have a blurry part (more error in parts farther away)
+    #find camera intrinsic parameters
+    #cvFindFundamentalMatrix()
+'''
 
 
 def getLines(img): #img is the base_image without hands in it
@@ -25,9 +41,9 @@ def getLines(img): #img is the base_image without hands in it
     #apply thresholding to binarize image: http://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html
     thresh, img_binary = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     cv2.imwrite("video_2-0001_binary.jpg", img_binary)
-    best_lines = hough(img_binary)
+    key_lines = hough(img_binary)
     #right now, best lines is all lines returned by Hough
-    return base_img, best_lines
+    return base_img, key_lines
 
 
 #from https://github.com/abidrahmank/OpenCV2-Python/blob/master/Official_Tutorial_Python_Codes/3_imgproc/sobel.py
@@ -55,18 +71,8 @@ def hough(img): #img is a binarized image
 
     params = cv2.HoughLines(img, 1,np.pi/180, 100) #params 2 and 3 i got somewhere, 4 we should tune
     #arr is array of (rho, theta) for each line above voting threshold
-    over = 0
-    under = 0
     for i in xrange(len(params)):
         degrees = 180 * params[i][0][1] / math.pi
         params[i][0][1] = degrees #all angles are positive degree values
-        if degrees >= 90:
-            over += 1
-        else:
-            under += 1
-    print "over, under 90", over, under
-    print params
-    #best_lines = sort params (with what qualifications?), take best 2
-    return params#best_lines
-
+    return params #returns all params (rho, theta)
 
