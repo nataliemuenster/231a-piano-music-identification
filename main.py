@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
 
-    #get the sobel of just the baseline image (no hands) to get lines then Hough transform
+    #get the sobel of just the baseline image (no hands) to get lines then Hough transform (Right now, best_lines is all lines returned by Hough)
     base_img, best_lines = preprocess.getLines(os.path.join(images_dir,base_img_name))
     
  	

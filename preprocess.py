@@ -8,20 +8,13 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-#def get_video -- let's just manually input urls for now when we want to extract a video
+
 
 #change output image names according to each video
 def parse_video(video):
 	print "Parse_video:", video
 	return
-	#In command line I used: "ffmpeg  -r 30 -i ./videos/video_2.mp4 -qscale:v 2 -f image2 video_2-%04d.jpg"
 
-    #not quite the same: ffmpeg  -r 30 -i ../video_2.mp4 -qscale:v 2 -f image2 video_2-%04d.jpg
-
-    #We should definitely look into this to crop https://video.stackexchange.com/questions/4563/how-can-i-crop-a-video-with-ffmpeg
-
-	#If we need to include this parsing in our code, here is how to do it in python:
-	#ff = ffmpy.FFmpeg(inputs={"ffmpeg -r 30 -i video_1.mp4 -f image2 video_1-%d.jpg"}, outputs={})
 
 def getLines(img): #img is the base_image without hands in it
     base_img = cv2.imread(img) #a static variable above main
@@ -33,7 +26,7 @@ def getLines(img): #img is the base_image without hands in it
     thresh, img_binary = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     cv2.imwrite("video_2-0001_binary.jpg", img_binary)
     best_lines = hough(img_binary)
-
+    #right now, best lines is all lines returned by Hough
     return base_img, best_lines
 
 
@@ -42,22 +35,17 @@ def sobel(img):
 	scale = 1
 	delta = 0
 	ddepth = cv2.CV_16S
-
 	#img = cv2.imread(img)
 	img = cv2.GaussianBlur(img,(3,3),0) #idk what these numbers mean
 	gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-
 	# Gradient-X
 	grad_x = cv2.Sobel(gray,ddepth,1,0, ksize = 3, scale = scale, delta = delta, borderType = cv2.BORDER_DEFAULT)
 	#grad_x = cv2.Scharr(gray,ddepth,1,0)
-
 	# Gradient-Y
 	grad_y = cv2.Sobel(gray,ddepth,0,1, ksize = 3, scale = scale, delta = delta, borderType = cv2.BORDER_DEFAULT)
 	#grad_y = cv2.Scharr(gray,ddepth,0,1)
-
 	abs_grad_x = cv2.convertScaleAbs(grad_x)   # converting back to uint8
 	abs_grad_y = cv2.convertScaleAbs(grad_y)
-
 	dst = cv2.addWeighted(abs_grad_x,0.5,abs_grad_y,0.5,0)
 	return dst
 
@@ -78,7 +66,7 @@ def hough(img): #img is a binarized image
             under += 1
     print "over, under 90", over, under
     print params
-    #best_lines = sorted(params)[:2] #what does it sort by...
-    return best_lines
+    #best_lines = sort params (with what qualifications?), take best 2
+    return params#best_lines
 
 
