@@ -1,6 +1,7 @@
 import os, sys
 import numpy as np
 import preprocess
+import key_detection
 from scipy.misc import imread
 import cv2
 print cv2.__version__
@@ -33,7 +34,7 @@ if __name__ == '__main__':
     #extract images from frames. Doesn't actually do anything rn...
     #frames = image_extraction.parse_video(video_path)
     
-
+    """
     #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
     base_img = base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
     base_img = base_img.astype(np.uint8)
@@ -41,9 +42,17 @@ if __name__ == '__main__':
     quit()
     #get the sobel of just the baseline image (no hands) to get lines between keys from Hough transform (Right now, key_lines is all lines returned by Hough)
     key_lines = preprocess.getLines(base_img_rectified) #will use base_img_rectified once i finish rectify
+    """
 
+    start_key = "B"
 
- 	
+    binary_rectified = cv2.imread("./video_2-0001_binary_no_sobel.jpg") #a static variable above main
+    
+    binary_rectified_sobel = cv2.imread("./video_2-0001_binary.jpg") #a static variable above main
+    
+    [whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes] = key_detection.detect_keys(binary_rectified, binary_rectified_sobel, start_key)
+    
+    print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
 
     #loops through all the images in the video directory
     '''image_list = os.listdir(images_dir)
