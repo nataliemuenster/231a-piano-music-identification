@@ -17,32 +17,22 @@ def parse_video(video):
 	print "Parse_video:", video
 	return
 
-#GUI to let the user pick the corners of the keyboard from the initial image
-'''def get_coord(event,x,y,flags,param):
-    global refPt
-    corners = np.array([[0,0],[0,0],[0,0],[0,0]]) #in x,y
-    if event ==  cv2.EVENT_LBUTTONCLK: #cv2.EVENT_LBUTTONDOWN:
-        refPt = [x,y]
-'''
-
-def get_corners(img_loc, size):
-    #somehow display image
-    #fig = plt.figure(img)
-    #fig.suptitle("monkey_street")
-    #fig.canvas.draw()
-    
+#https://stackoverflow.com/questions/25521120/store-mouse-click-event-coordinates-with-matplotlib
+#display image and record where user clicks to get corners of keyboard
+def get_corners(img_loc, size): #img_loc is the path to get the image
+    #display image so user will be able to click
     img = imread(img_loc)
     fig = plt.figure()
     
     #img = mpimg.imread(img_loc)
     #plt.imshow(img)
     plt.imshow(img)
-    print "no"
+    print "gets here"
 
     coords = []
 
     def onclick(event):
-        print "ok?"
+        print "in event function"
         global ix, iy
         ix, iy = event.xdata, event.ydata
         print 'x = %d, y = %d'%(
@@ -51,18 +41,26 @@ def get_corners(img_loc, size):
         global coords
         coords.append([ix, iy])
 
-        if len(coords) == 4:
+        if len(coords) == 4: #we want 4 coordinates
             
             fig.canvas.mpl_disconnect(cid)
 
         
-
+    #this connects mouse event to onclick function
     cid = fig.canvas.mpl_connect('button_press_event', onclick)
     print cid
-    #can access coords now
+    #can access coords now through global
+    #Later postprocess points so we know which corner is which and return in correct order
 
 
-
+#FAILED ATTEMPT TO WORK WITH OPENCV -- some problem with the version, I can't seem to fix it.
+#GUI to let the user pick the corners of the keyboard from the initial image
+'''def get_coord(event,x,y,flags,param):
+    global refPt
+    corners = np.array([[0,0],[0,0],[0,0],[0,0]]) #in x,y
+    if event ==  cv2.EVENT_LBUTTONCLK: #cv2.EVENT_LBUTTONDOWN:
+        refPt = [x,y]
+'''
 
 #https://stackoverflow.com/questions/23596511/how-to-save-mouse-position-in-variable-using-opencv-and-python
 '''def get_corners(img, size):
@@ -86,11 +84,7 @@ def get_corners(img_loc, size):
     cv2.destroyAllWindows()
     print "corners:", corners
 '''
-'''upL = [0,0]
-botL = [0,size[0]]
-upR = [size[1],0]
-botR = [size[1],size[0]]
-'''
+
 
 #Takes in an image of a piano, asks for the 4 corner points, and returns the rectified and cropped image, with consistent ratios of size of black to white keys
 def rectify(img): #original base_img (img2 example is of size: 1280x720)
