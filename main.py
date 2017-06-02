@@ -19,7 +19,7 @@ base_img_name = "video_1-0122.jpg"
 
 #url2 = "https://www.youtube.com/watch?v=CQTim0KdILE"
 video_name = "video_2" #User can change this for whichever video they want
-video_path = "./data/videos/video_2.mp4"
+#video_path = "./data/videos/video_2.mp4"
 images_dir = "./data/video_2_images"
 sobel_img_dir = "./data/sobel_images_2"
 base_img_name = "video_2-0001.jpg"
@@ -27,13 +27,12 @@ base_img_name = "video_2-0001.jpg"
 
 if __name__ == '__main__':
 
-    video_path = "./data/videos/" + video_name + ".mp4"
     images_dir = "./data/" + video_name + "_images"
-    if not os.path.exists(images_dir):
-        os.mkdir(images_dir)
     
     #extract images from frames. Doesn't actually do anything rn...
-    #frames = image_extraction.parse_video(video_path)
+    frames = preprocess.get_frames(video_name)
+    print "frames", len(frames)
+    quit()
     
     '''
     #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
@@ -55,13 +54,13 @@ if __name__ == '__main__':
     
     print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
 
-    #Mask off hands from each frame
 
+    #Mask off hands from each frame first?
 
     #Now detectNotesPressed
     #find light source based on shape of shadows?? then decide how shadows determine right or left key
-    noteDetection.allFrameDiffs(images_dir):
-
+    noteDetection.allFrameDiffs(frames)
+	#what should eb returned from noteDetection!!??
 
 
     print "done with main"

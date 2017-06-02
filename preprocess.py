@@ -13,9 +13,29 @@ import argparse
 
 
 #change output image names according to each video
-def parse_video(video):
-	print "Parse_video:", video
-	return
+def get_frames(video_name):
+	#print "Parse_video:", video
+    video_path = "./data/videos/" + video_name + ".mp4"
+    images_dir = "./data/" + video_name + "_images"
+
+    #if not yet parsed, parse. Else just return images
+	
+    if not os.path.exists(images_dir):
+        #os.mkdir(images_dir)
+        #process video and put all frames in this dir
+        print "Please extract the frames from the video using ffmpeg, then try again."
+        quit()
+    
+    #loops through all the images in the video directory
+    image_list = os.listdir(images_dir)
+    frames = []
+    for img_name in image_list:
+        img = cv2.imread(os.path.join(images_dir,img_name))
+        if img is not None:
+                img = img.astype(np.uint8)
+                #img = image_extraction.sobel(img)
+                frames.append(img)
+    return frames
 
 #https://stackoverflow.com/questions/25521120/store-mouse-click-event-coordinates-with-matplotlib
 #display image and record where user clicks to get corners of keyboard
