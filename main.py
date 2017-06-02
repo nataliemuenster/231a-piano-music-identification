@@ -1,6 +1,7 @@
 import os, sys
 import numpy as np
 import preprocess
+import note_detection
 import key_detection
 from scipy.misc import imread
 import cv2
@@ -34,7 +35,7 @@ if __name__ == '__main__':
     #extract images from frames. Doesn't actually do anything rn...
     #frames = image_extraction.parse_video(video_path)
     
-    """
+    '''
     #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
     base_img = base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
     base_img = base_img.astype(np.uint8)
@@ -42,7 +43,7 @@ if __name__ == '__main__':
     quit()
     #get the sobel of just the baseline image (no hands) to get lines between keys from Hough transform (Right now, key_lines is all lines returned by Hough)
     key_lines = preprocess.getLines(base_img_rectified) #will use base_img_rectified once i finish rectify
-    """
+    '''
 
     start_key = "B"
 
@@ -54,18 +55,12 @@ if __name__ == '__main__':
     
     print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
 
-    #loops through all the images in the video directory
-    '''image_list = os.listdir(images_dir)
-    images = []
-    for img_name in image_list:
-        img = cv2.imread(os.path.join(images_dir,img_name))
-        name = ""
-        if img is not None:
-                img = img.astype(np.uint8)
-                img = image_extraction.sobel(img)
-                #print "img.shape", img.shape
-                images.append(img)
-    '''
+    #Mask off hands from each frame
+
+
+    #Now detectNotesPressed
+    #find light source based on shape of shadows?? then decide how shadows determine right or left key
+    noteDetection.allFrameDiffs(images_dir):
 
 
 

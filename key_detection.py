@@ -50,7 +50,7 @@ def detect_white_keys(im_bw, startKey):
                 start = pixel
                 first_edge = pixel
             else:
-                if (abs(start - pixel) > 12):
+                if (abs(start - pixel) > 12): #what is 12 for? Arbitrary?
                     widths.append(abs(start - pixel))
                     numSampleKeys += 1
                     start = pixel
