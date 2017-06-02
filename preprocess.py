@@ -92,8 +92,10 @@ def rectify(img): #original base_img (img2 example is of size: 1280x720)
     size = img.shape
     print size
     corners = get_corners("./data/video_2_images/video_2-0001.jpg", size)
-    pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]) #in x,y
-    pts_dst = np.array([[0,0],[0,size[0]],[size[1],0],[size[1],size[0]]]) #in x,y
+    pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]).astype(float) #in x,y
+    pts_dst = np.array([[0,0],[0,size[0]],[size[1],0],[size[1],size[0]]]).astype(float) #in x,y
+    #print "pts_src, pts_dst", pts_src, pts_dst
+    
     h, status = cv2.findHomography(pts_src, pts_dst)
     img_rectified = cv2.warpPerspective(img, h, (size[1], size[0]))
     #cv2.imwrite("video_2-0001_rectified.jpg", img_rectified)
