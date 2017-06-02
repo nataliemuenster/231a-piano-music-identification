@@ -7,7 +7,9 @@ import os
 import math
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import matplotlib.image as mpimg
 import argparse
+#import pymouse #SARAH YOU NEED TO INSTALL THIS PROBABLY
 
 
 #change output image names according to each video
@@ -23,12 +25,53 @@ def parse_video(video):
         refPt = [x,y]
 '''
 
+def get_corners(img_loc, size):
+    #somehow display image
+    #fig = plt.figure(img)
+    #fig.suptitle("monkey_street")
+    #fig.canvas.draw()
+    
+    img = imread(img_loc)
+    fig = plt.figure()
+    
+    #img = mpimg.imread(img_loc)
+    #plt.imshow(img)
+    plt.imshow(img)
+    print "no"
+
+    coords = []
+
+    def onclick(event):
+        print "ok?"
+        global ix, iy
+        ix, iy = event.xdata, event.ydata
+        print 'x = %d, y = %d'%(
+            ix, iy)
+
+        global coords
+        coords.append([ix, iy])
+
+        if len(coords) == 4:
+            
+            fig.canvas.mpl_disconnect(cid)
+
+        
+
+    cid = fig.canvas.mpl_connect('button_press_event', onclick)
+    print cid
+    #can access coords now
+
+
+
+
 #https://stackoverflow.com/questions/23596511/how-to-save-mouse-position-in-variable-using-opencv-and-python
-def get_corners(img, size):
+'''def get_corners(img, size):
     corners = []
     #Create a window and bind the function to window
+    
+
     #cv2.namedWindow('image')
-    '''cv2.setMouseCallback('Choose keyboard corners', get_coord, img)
+    cv2.setMouseCallback('Choose keyboard corners', get_coord)#, img)
 
     while(len(corners) < 4): #get the 4 corners
         cv2.imshow('Choose keyboard corners',img)
@@ -42,19 +85,19 @@ def get_corners(img, size):
 
     cv2.destroyAllWindows()
     print "corners:", corners
-    '''
-    '''upL = [0,0]
-    botL = [0,size[0]]
-    upR = [size[1],0]
-    botR = [size[1],size[0]]
-    '''
+'''
+'''upL = [0,0]
+botL = [0,size[0]]
+upR = [size[1],0]
+botR = [size[1],size[0]]
+'''
 
 #Takes in an image of a piano, asks for the 4 corner points, and returns the rectified and cropped image, with consistent ratios of size of black to white keys
 def rectify(img): #original base_img (img2 example is of size: 1280x720)
     #how to make a GUI to show first image and let user click corners:
     size = img.shape
     print size
-    #corners = get_corners(img, size)
+    corners = get_corners("./data/video_2_images/video_2-0001.jpg", size)
     pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]) #in x,y
     pts_dst = np.array([[0,0],[0,size[0]],[size[1],0],[size[1],size[0]]]) #in x,y
     h, status = cv2.findHomography(pts_src, pts_dst)
