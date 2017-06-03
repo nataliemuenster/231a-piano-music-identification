@@ -14,7 +14,7 @@ from skimage.morphology import label
 def allFrameDiffs(frames):
 	print "okay"
 	print "frame type", type(frames[0])
-	diff = cv2.subtract(frames[44],frames[49])
+	diff = cv2.subtract(frames[1],frames[0])
 	cv2.imwrite("video_2-diff_ex.jpg", diff)
 	##only rectify/preprocess every 5 frames to avoid extra work
 	#NO!take top half of images, to get rid of hands

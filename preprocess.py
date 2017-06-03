@@ -30,12 +30,14 @@ def get_frames(video_name):
     #loops through all the images in the video directory
     image_list = os.listdir(images_dir)
     frames = []
+    frameNum = 0
     for img_name in image_list:
         img = cv2.imread(os.path.join(images_dir,img_name))
-        if img is not None:
+        if img is not None and frameNum%5 == 0: #we gather only every 5 frames
                 img = img.astype(np.uint8)
                 #img = image_extraction.sobel(img)
                 frames.append(img)
+        frameNum += 1
     return frames
 
 

@@ -71,31 +71,34 @@ if __name__ == '__main__':
     first_frame = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
     get_corners(first_frame)
     
-    #extract images from frames and rectifies them acording to params of first image
-    frames = preprocess.get_frames(video_name)
-    #print "frames", len(frames)
-    
     #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
     base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
     base_img = base_img.astype(np.uint8)
     pts_src = np.asarray(right_clicks)
+    print "found corners:", right_clicks
     
     base_img_rectified, params = preprocess.rectify_first(base_img, pts_src)
     #get the sobel of just the baseline image (no hands) to get lines between keys from Hough transform (Right now, key_lines is all lines returned by Hough)
+    print "params after first rectification:", params
     
     cv2.imshow('image', base_img_rectified)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+    #extract images from frames and rectifies them acording to params of first image
+    frames = preprocess.get_frames(video_name)
+    print "preprocessed frames", len(frames)
+
     [binary_rectified_sobel, binary_rectified] = preprocess.getBinaryImages(base_img_rectified)
-    #quit()
+    print "got binary"
 
     [whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes] = key_detection.detect_keys(binary_rectified, binary_rectified_sobel, start_key)
     
     #print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
 
 
-    #Mask off hands from each frame first? Then black and white
+    #Mask off hands from each frame first? Then make it black and white?
+    #Rectify all the frames we need
     frames = rectify_all(frames, params)
     #Now detectNotesPressed
     #find light source based on shape of shadows?? then decide how shadows determine right or left key
