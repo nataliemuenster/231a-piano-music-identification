@@ -17,3 +17,7 @@ def allFrameDiffs(frames):
 	diff = cv2.subtract(frames[44],frames[49])
 	cv2.imwrite("video_2-diff_ex.jpg", diff)
 	##only rectify/preprocess every 5 frames to avoid extra work
+	#NO!take top half of images, to get rid of hands
+	#find the x coordinate wth the most white
+	#look for where black turns to white, return that line to sarah (using threshold, get from range of intensity values)
+	#Give Sarah the x (starting at 1/3 down from the top left side of image)

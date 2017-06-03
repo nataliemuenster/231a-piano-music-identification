@@ -5,7 +5,9 @@ import note_detection
 import key_detection
 from scipy.misc import imread
 import cv2
-print cv2.__version__
+import urllib
+
+
 
 videos_dir = "./data/videos"
 max_RGB_value = 255
@@ -25,36 +27,76 @@ sobel_img_dir = "./data/sobel_images_2"
 base_img_name = "video_2-0001.jpg"
 
 
-if __name__ == '__main__':
+#the [x, y] for each right-click event will be stored here
+right_clicks = list()
 
+#this function will be called whenever the mouse is right-clicked
+def mouse_callback(event, x, y, flags, params):
+    #right-click event value is 2
+    if event == 2:
+        global right_clicks
+        
+        #store the coordinates of the right-click event
+        right_clicks.append([x, y])
+
+
+def get_corners(img):
+    print
+    print "Please click on the four corners that define the keyboard in first image."
+    print "Use two fingers when clicking to select points"
+    print "Select in this order: top right, bottom right, top left, bottom left"
+    
+    scale_width = 640 / img.shape[1]
+    scale_height = 480 / img.shape[0]
+    scale = min(scale_width, scale_height)
+    window_width = int(img.shape[1] * scale)
+    window_height = int(img.shape[0] * scale)
+    cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('image', window_width, window_height)
+    
+    #set mouse callback function for window
+    cv2.setMouseCallback('image', mouse_callback)
+    
+    cv2.imshow('image', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+
+if __name__ == '__main__':
     images_dir = "./data/" + video_name + "_images"
+
+    #get User's input
+    start_key = input("Please enter the note corresponding to the left most white key in the format (A, B, C, D, E, F, or G) with quotes around the capital letter: ")
+    first_frame = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
+    get_corners(first_frame)
     
-    #extract images from frames. Doesn't actually do anything rn...
+    #extract images from frames and rectifies them acording to params of first image
     frames = preprocess.get_frames(video_name)
-    print "frames", len(frames)
-    
+    #print "frames", len(frames)
     
     #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
-    base_img = base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
+    base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
     base_img = base_img.astype(np.uint8)
-    base_img_rectified, params = preprocess.rectify_first(base_img)
+    pts_src = np.asarray(right_clicks)
+    
+    base_img_rectified, params = preprocess.rectify_first(base_img, pts_src)
     #get the sobel of just the baseline image (no hands) to get lines between keys from Hough transform (Right now, key_lines is all lines returned by Hough)
     
-    
+    cv2.imshow('image', base_img_rectified)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
-    start_key = "B"
+    [binary_rectified_sobel, binary_rectified] = preprocess.getBinaryImages(base_img_rectified)
+    #quit()
 
-    binary_rectified = cv2.imread("./video_2-0001_binary_no_sobel.jpg") #a static variable above main
-    
-    binary_rectified_sobel = cv2.imread("./video_2-0001_binary.jpg") #a static variable above main
-    
     [whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes] = key_detection.detect_keys(binary_rectified, binary_rectified_sobel, start_key)
     
     #print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
 
 
     #Mask off hands from each frame first? Then black and white
-    frames = rectiify_all(frames, params)
+    frames = rectify_all(frames, params)
     #Now detectNotesPressed
     #find light source based on shape of shadows?? then decide how shadows determine right or left key
     note_detection.allFrameDiffs(frames)
@@ -62,3 +104,4 @@ if __name__ == '__main__':
 
 
     print "done with main"
+

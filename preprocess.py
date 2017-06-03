@@ -13,6 +13,7 @@ import argparse
 
 
 #change output image names according to each video
+
 def get_frames(video_name):
 	#print "Parse_video:", video
     video_path = "./data/videos/" + video_name + ".mp4"
@@ -39,29 +40,57 @@ def get_frames(video_name):
 
 
 #Takes in an image of a piano, asks for the 4 corner points, and returns the rectified and cropped image, with consistent ratios of size of black to white keys
-def rectify_first(img): #original base_img (img2 example is of size: 1280x720)
+def rectify_first(img, pts_src): #original base_img (img2 example is of size: 1280x720)
     #how to make a GUI to show first image and let user click corners:
-    #size = img.shape
-    
-    corners = get_corners("./data/video_2_images/video_2-0001.jpg", size)
-    pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]).astype(float) #in x,y
+    size = img.shape
+    #pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]).astype(float) #in x,y
+    pts_src = pts_src.astype(float)
     pts_dst = np.array([[0,0],[0,size[0]],[size[1],0],[size[1],size[0]]]).astype(float) #in x,y
     #print "pts_src, pts_dst", pts_src, pts_dst
     
     h, status = cv2.findHomography(pts_src, pts_dst)
     img_rectified = cv2.warpPerspective(img, h, (size[1], size[0]))
+    """
+    cv2.imshow('image', img_rectified)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    """
+    
     #cv2.imwrite("video_2-0001_rectified.jpg", img_rectified)
     params = np.array([pts_src, pts_dst])
     return img_rectified, params
-    #needs to return params also
 
 #rectifies and converts to greyscale all images
 def rectify_all(frames, params):
+    size = img.shape
     for frame in frames:
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
         h, status = cv2.findHomography(params[0], params[1])
         frame = cv2.warpPerspective(frame, h, (size[1], size[0]))
     return frames
+
+
+def getBinaryImages(base_img):
+    img_grey = cv2.cvtColor(base_img, cv2.COLOR_RGB2GRAY)
+    #cv2.imwrite("video_2-0001_grey.jpg", img_grey)
+    thresh, img_binary = cv2.threshold(img_grey, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    #cv2.imwrite("video_2-0001_binary_no_sobel.jpg", img_binary)
+    
+    #now try applying Sobel first
+    img_sobel = sobel(base_img)
+    #cv2.imwrite("video_2-0001_sobel.jpg", img_sobel)
+    #apply thresholding to binarize image: http://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html
+    thresh, img_binary_sobel = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+
+    cv2.imshow('image', img_binary)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    
+    cv2.imshow('image', img_binary_sobel)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    return img_binary_sobel, img_binary
 
 
 #from https://github.com/abidrahmank/OpenCV2-Python/blob/master/Official_Tutorial_Python_Codes/3_imgproc/sobel.py
