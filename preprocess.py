@@ -15,73 +15,51 @@ def parse_video(video):
 	print "Parse_video:", video
 	return
 
-#GUI to let the user pick the corners of the keyboard from the initial image
-'''def get_coord(event,x,y,flags,param):
-    global refPt
-    corners = np.array([[0,0],[0,0],[0,0],[0,0]]) #in x,y
-    if event ==  cv2.EVENT_LBUTTONCLK: #cv2.EVENT_LBUTTONDOWN:
-        refPt = [x,y]
-'''
-
-#https://stackoverflow.com/questions/23596511/how-to-save-mouse-position-in-variable-using-opencv-and-python
-def get_corners(img, size):
-    corners = []
-    #Create a window and bind the function to window
-    #cv2.namedWindow('image')
-    '''cv2.setMouseCallback('Choose keyboard corners', get_coord, img)
-
-    while(len(corners) < 4): #get the 4 corners
-        cv2.imshow('Choose keyboard corners',img)
-        
-        #self.pressedkey=cv2.waitKey(0)
-        # Wait for ESC key to exit
-        #if self.pressedkey==27:
-        #    cv2.destroyAllWindows()
-        if self.pressedkey == 13: #if enter pressed
-            corners.append(refPt)
-
-    cv2.destroyAllWindows()
-    print "corners:", corners
-    '''
-    '''upL = [0,0]
-    botL = [0,size[0]]
-    upR = [size[1],0]
-    botR = [size[1],size[0]]
-    '''
 
 #Takes in an image of a piano, asks for the 4 corner points, and returns the rectified and cropped image, with consistent ratios of size of black to white keys
-def rectify(img): #original base_img (img2 example is of size: 1280x720)
+def rectify(img, pts_src): #original base_img (img2 example is of size: 1280x720)
     #how to make a GUI to show first image and let user click corners:
     size = img.shape
-    print size
     #corners = get_corners(img, size)
-    pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]).astype(float) #in x,y
+    #pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]).astype(float) #in x,y
+    pts_src = pts_src.astype(float)
+    #print pts_src
     pts_dst = np.array([[0,0],[0,size[0]],[size[1],0],[size[1],size[0]]]).astype(float) #in x,y
     
     #print "pts_src, pts_dst", pts_src, pts_dst
     
     h, status = cv2.findHomography(pts_src, pts_dst)
     img_rectified = cv2.warpPerspective(img, h, (size[1], size[0]))
+    """
+    cv2.imshow('image', img_rectified)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    """
+    
     #cv2.imwrite("video_2-0001_rectified.jpg", img_rectified)
     return img_rectified 
 
-
-
-def getLines(base_img): #img is the base_image without hands in it
+def getBinaryImages(base_img):
     img_grey = cv2.cvtColor(base_img, cv2.COLOR_RGB2GRAY)
     #cv2.imwrite("video_2-0001_grey.jpg", img_grey)
     thresh, img_binary = cv2.threshold(img_grey, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     #cv2.imwrite("video_2-0001_binary_no_sobel.jpg", img_binary)
-
+    
     #now try applying Sobel first
     img_sobel = sobel(base_img)
     #cv2.imwrite("video_2-0001_sobel.jpg", img_sobel)
     #apply thresholding to binarize image: http://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html
     thresh, img_binary_sobel = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    #cv2.imwrite("video_2-0001_binary.jpg", img_binary_sobel)
-    key_lines = hough(img_binary_sobel)
-    #right now, best lines is all lines returned by Hough
-    return key_lines
+
+    cv2.imshow('image', img_binary)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    
+    cv2.imshow('image', img_binary_sobel)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    return img_binary_sobel, img_binary
 
 
 #from https://github.com/abidrahmank/OpenCV2-Python/blob/master/Official_Tutorial_Python_Codes/3_imgproc/sobel.py

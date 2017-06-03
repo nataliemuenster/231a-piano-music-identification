@@ -5,7 +5,6 @@ import key_detection
 from scipy.misc import imread
 import cv2
 import urllib
-from win32api import GetSystemMetrics
 
 
 
@@ -27,94 +26,24 @@ sobel_img_dir = "./data/sobel_images_2"
 base_img_name = "video_2-0001.jpg"
 
 
-if __name__ == '__main__':
-    
-    corners, start_key = getUserInput()
-    """
-    video_path = "./data/videos/" + video_name + ".mp4"
-    images_dir = "./data/" + video_name + "_images"
-    if not os.path.exists(images_dir):
-        os.mkdir(images_dir)
-    """
-    
-    #extract images from frames. Doesn't actually do anything rn...
-    #frames = image_extraction.parse_video(video_path)
-    
-    """
-    #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
-    base_img = base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
-    base_img = base_img.astype(np.uint8)
-    base_img_rectified = preprocess.rectify(base_img)
-    quit()
-    #get the sobel of just the baseline image (no hands) to get lines between keys from Hough transform (Right now, key_lines is all lines returned by Hough)
-    key_lines = preprocess.getLines(base_img_rectified) #will use base_img_rectified once i finish rectify
-    """
-    
-    get_corners(img)
-    
-    """
-    start_key = "B"
-
-    binary_rectified = cv2.imread("./video_2-0001_binary_no_sobel.jpg") #a static variable above main
-    
-    binary_rectified_sobel = cv2.imread("./video_2-0001_binary.jpg") #a static variable above main
-    
-    [whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes] = key_detection.detect_keys(binary_rectified, binary_rectified_sobel, start_key)
-    
-    print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
-    """
-
-    #loops through all the images in the video directory
-    '''image_list = os.listdir(images_dir)
-    images = []
-    for img_name in image_list:
-        img = cv2.imread(os.path.join(images_dir,img_name))
-        name = ""
-        if img is not None:
-                img = img.astype(np.uint8)
-                img = image_extraction.sobel(img)
-                #print "img.shape", img.shape
-                images.append(img)
-    '''
-
-
-
-    print "done with main"
-
-
-
-"""
-def getUserInput
-    print Hello! In order to process your video, we require a couple pieces of information about your video.
-    top_right = input('Pixel coordinates of the top right corner (in the format [x,y] with no spaces): ')
-    top_right = input('Pixel coordinates of the top right corner (in the format [x,y] with no spaces): ')
-    top_right = input('Pixel coordinates of the top right corner (in the format [x,y] with no spaces): ')
-    top_right = input('Pixel coordinates of the top right corner (in the format [x,y] with no spaces): ')
-
-"""
-
-
-
 #the [x, y] for each right-click event will be stored here
 right_clicks = list()
 
 #this function will be called whenever the mouse is right-clicked
 def mouse_callback(event, x, y, flags, params):
-    
     #right-click event value is 2
     if event == 2:
         global right_clicks
         
         #store the coordinates of the right-click event
         right_clicks.append([x, y])
-        
-        #this just verifies that the mouse data is being collected
-        #you probably want to remove this later
-        print right_clicks
 
 def get_corners(img):
-    width = GetSystemMetrics(0)
-    height = GetSystemMetrics(1)
+    print
+    print "Please click on the four corners that define the keyboard in first image."
+    print "Use two fingers when clicking to select points"
+    print "Select in this order: top right, bottom right, top left, bottom left"
+    
     scale_width = 640 / img.shape[1]
     scale_height = 480 / img.shape[0]
     scale = min(scale_width, scale_height)
@@ -132,4 +61,43 @@ def get_corners(img):
 
 
 
+
+if __name__ == '__main__':
+    
+    #get User's input
+    start_key = input("Please enter the note corresponding to the left most white key in the format (A, B, C, D, E, F, or G) with quotes around the capital letter: ")
+    first_frame = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
+    get_corners(first_frame)
+    
+    """
+    video_path = "./data/videos/" + video_name + ".mp4"
+    images_dir = "./data/" + video_name + "_images"
+    if not os.path.exists(images_dir):
+        os.mkdir(images_dir)
+    """
+    
+    #extract images from frames. Doesn't actually do anything rn...
+    #frames = image_extraction.parse_video(video_path)
+    
+    
+    #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
+    base_img = base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
+    base_img = base_img.astype(np.uint8)
+    
+    pts_src = np.asarray(right_clicks)
+    
+    base_img_rectified = preprocess.rectify(base_img, pts_src)
+    cv2.imshow('image', base_img_rectified)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    [binary_rectified_sobel, binary_rectified] = preprocess.getBinaryImages(base_img_rectified)
+    #quit()
+
+    [whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes] = key_detection.detect_keys(binary_rectified, binary_rectified_sobel, start_key)
+    
+    print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
+
+
+    print "done with main"
 

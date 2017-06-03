@@ -16,12 +16,8 @@ threshold = 0.8
 
 
 def detect_keys(img_binary, img_binary_sobel, start_key):
-    
+        
     #get an array defining each key
-    img_binary_sobel = cv2.cvtColor(img_binary_sobel, cv2.COLOR_RGB2GRAY)
-
-    img_binary = cv2.cvtColor(img_binary, cv2.COLOR_RGB2GRAY)
-
     [whiteKeys, numWhiteKeys, offset, white_notes] = detect_white_keys(img_binary_sobel, start_key)
     
     [blackKeys, numBlackKeys, black_notes] = detect_black_keys(img_binary, offset)
