@@ -32,13 +32,12 @@ if __name__ == '__main__':
     #extract images from frames. Doesn't actually do anything rn...
     frames = preprocess.get_frames(video_name)
     print "frames", len(frames)
-    quit()
     
     '''
     #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
     base_img = base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
     base_img = base_img.astype(np.uint8)
-    base_img_rectified = preprocess.rectify(base_img)
+    base_img_rectified, params = preprocess.rectify_first(base_img)
     quit()
     #get the sobel of just the baseline image (no hands) to get lines between keys from Hough transform (Right now, key_lines is all lines returned by Hough)
     key_lines = preprocess.getLines(base_img_rectified) #will use base_img_rectified once i finish rectify
@@ -46,20 +45,20 @@ if __name__ == '__main__':
 
     start_key = "B"
 
-    binary_rectified = cv2.imread("./video_2-0001_binary_no_sobel.jpg") #a static variable above main
+    #binary_rectified = cv2.imread("./video_2-0001_binary_no_sobel.jpg") #a static variable above main
     
-    binary_rectified_sobel = cv2.imread("./video_2-0001_binary.jpg") #a static variable above main
+    #binary_rectified_sobel = cv2.imread("./video_2-0001_binary.jpg") #a static variable above main
     
-    [whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes] = key_detection.detect_keys(binary_rectified, binary_rectified_sobel, start_key)
+    #[whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes] = key_detection.detect_keys(binary_rectified, binary_rectified_sobel, start_key)
     
-    print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
+    #print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
 
 
-    #Mask off hands from each frame first?
-
+    #Mask off hands from each frame first? Then black and white
+    frames = rectiify_all(frames, params)
     #Now detectNotesPressed
     #find light source based on shape of shadows?? then decide how shadows determine right or left key
-    noteDetection.allFrameDiffs(frames)
+    note_detection.allFrameDiffs(frames)
 	#what should eb returned from noteDetection!!??
 
 

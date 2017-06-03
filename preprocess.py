@@ -107,10 +107,10 @@ def get_corners(img_loc, size): #img_loc is the path to get the image
 
 
 #Takes in an image of a piano, asks for the 4 corner points, and returns the rectified and cropped image, with consistent ratios of size of black to white keys
-def rectify(img): #original base_img (img2 example is of size: 1280x720)
+def rectify_first(img): #original base_img (img2 example is of size: 1280x720)
     #how to make a GUI to show first image and let user click corners:
-    size = img.shape
-    print size
+    #size = img.shape
+    
     corners = get_corners("./data/video_2_images/video_2-0001.jpg", size)
     pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]).astype(float) #in x,y
     pts_dst = np.array([[0,0],[0,size[0]],[size[1],0],[size[1],size[0]]]).astype(float) #in x,y
@@ -119,8 +119,16 @@ def rectify(img): #original base_img (img2 example is of size: 1280x720)
     h, status = cv2.findHomography(pts_src, pts_dst)
     img_rectified = cv2.warpPerspective(img, h, (size[1], size[0]))
     #cv2.imwrite("video_2-0001_rectified.jpg", img_rectified)
-    return img_rectified 
+    params = np.array([pts_src, pts_dst])
+    return img_rectified, params
 
+#rectifies and converts to greyscale all images
+def rectify_all(frames, params):
+    for frame in frames:
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+        h, status = cv2.findHomography(params[0], params[1])
+        frame = cv2.warpPerspective(frame, h, (size[1], size[0]))
+    return frames
 
 
 def getLines(base_img): #img is the base_image without hands in it
