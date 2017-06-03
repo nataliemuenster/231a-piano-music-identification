@@ -16,3 +16,4 @@ def allFrameDiffs(frames):
 	print "frame type", type(frames[0])
 	diff = cv2.subtract(frames[44],frames[49])
 	cv2.imwrite("video_2-diff_ex.jpg", diff)
+	##only rectify/preprocess every 5 frames to avoid extra work

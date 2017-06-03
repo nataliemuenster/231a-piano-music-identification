@@ -37,74 +37,6 @@ def get_frames(video_name):
                 frames.append(img)
     return frames
 
-#https://stackoverflow.com/questions/25521120/store-mouse-click-event-coordinates-with-matplotlib
-#display image and record where user clicks to get corners of keyboard
-def get_corners(img_loc, size): #img_loc is the path to get the image
-    #display image so user will be able to click
-    img = imread(img_loc)
-    fig = plt.figure()
-    
-    #img = mpimg.imread(img_loc)
-    #plt.imshow(img)
-    plt.imshow(img)
-    print "gets here"
-
-    coords = []
-
-    def onclick(event):
-        print "in event function"
-        global ix, iy
-        ix, iy = event.xdata, event.ydata
-        print 'x = %d, y = %d'%(
-            ix, iy)
-
-        global coords
-        coords.append([ix, iy])
-
-        if len(coords) == 4: #we want 4 coordinates
-            
-            fig.canvas.mpl_disconnect(cid)
-
-        
-    #this connects mouse event to onclick function
-    cid = fig.canvas.mpl_connect('button_press_event', onclick)
-    print cid
-    #can access coords now through global
-    #Later postprocess points so we know which corner is which and return in correct order
-
-
-#FAILED ATTEMPT TO WORK WITH OPENCV -- some problem with the version, I can't seem to fix it.
-#GUI to let the user pick the corners of the keyboard from the initial image
-'''def get_coord(event,x,y,flags,param):
-    global refPt
-    corners = np.array([[0,0],[0,0],[0,0],[0,0]]) #in x,y
-    if event ==  cv2.EVENT_LBUTTONCLK: #cv2.EVENT_LBUTTONDOWN:
-        refPt = [x,y]
-'''
-
-#https://stackoverflow.com/questions/23596511/how-to-save-mouse-position-in-variable-using-opencv-and-python
-'''def get_corners(img, size):
-    corners = []
-    #Create a window and bind the function to window
-    
-
-    #cv2.namedWindow('image')
-    cv2.setMouseCallback('Choose keyboard corners', get_coord)#, img)
-
-    while(len(corners) < 4): #get the 4 corners
-        cv2.imshow('Choose keyboard corners',img)
-        
-        #self.pressedkey=cv2.waitKey(0)
-        # Wait for ESC key to exit
-        #if self.pressedkey==27:
-        #    cv2.destroyAllWindows()
-        if self.pressedkey == 13: #if enter pressed
-            corners.append(refPt)
-
-    cv2.destroyAllWindows()
-    print "corners:", corners
-'''
-
 
 #Takes in an image of a piano, asks for the 4 corner points, and returns the rectified and cropped image, with consistent ratios of size of black to white keys
 def rectify_first(img): #original base_img (img2 example is of size: 1280x720)
@@ -121,6 +53,7 @@ def rectify_first(img): #original base_img (img2 example is of size: 1280x720)
     #cv2.imwrite("video_2-0001_rectified.jpg", img_rectified)
     params = np.array([pts_src, pts_dst])
     return img_rectified, params
+    #needs to return params also
 
 #rectifies and converts to greyscale all images
 def rectify_all(frames, params):
@@ -129,23 +62,6 @@ def rectify_all(frames, params):
         h, status = cv2.findHomography(params[0], params[1])
         frame = cv2.warpPerspective(frame, h, (size[1], size[0]))
     return frames
-
-
-def getLines(base_img): #img is the base_image without hands in it
-    img_grey = cv2.cvtColor(base_img, cv2.COLOR_RGB2GRAY)
-    #cv2.imwrite("video_2-0001_grey.jpg", img_grey)
-    thresh, img_binary = cv2.threshold(img_grey, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    #cv2.imwrite("video_2-0001_binary_no_sobel.jpg", img_binary)
-
-    #now try applying Sobel first
-    img_sobel = sobel(base_img)
-    #cv2.imwrite("video_2-0001_sobel.jpg", img_sobel)
-    #apply thresholding to binarize image: http://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html
-    thresh, img_binary_sobel = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    #cv2.imwrite("video_2-0001_binary.jpg", img_binary_sobel)
-    key_lines = hough(img_binary_sobel)
-    #right now, best lines is all lines returned by Hough
-    return key_lines
 
 
 #from https://github.com/abidrahmank/OpenCV2-Python/blob/master/Official_Tutorial_Python_Codes/3_imgproc/sobel.py
