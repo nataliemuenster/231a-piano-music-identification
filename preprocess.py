@@ -64,11 +64,11 @@ def rectify_first(img, pts_src): #original base_img (img2 example is of size: 12
 
 #rectifies and converts to greyscale all images
 def rectify_all(frames, params):
-    size = img.shape
-    for frame in frames:
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+    size = frames[0].shape
+    for f in xrange(len(frames)):
+        frame = cv2.cvtColor(frames[f], cv2.COLOR_RGB2GRAY)
         h, status = cv2.findHomography(params[0], params[1])
-        frame = cv2.warpPerspective(frame, h, (size[1], size[0]))
+        frames[f] = cv2.warpPerspective(frame, h, (size[1], size[0]))
     return frames
 
 
@@ -83,7 +83,7 @@ def getBinaryImages(base_img):
     #cv2.imwrite("video_2-0001_sobel.jpg", img_sobel)
     #apply thresholding to binarize image: http://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html
     thresh, img_binary_sobel = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-
+    '''
     cv2.imshow('image', img_binary)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -91,7 +91,7 @@ def getBinaryImages(base_img):
     cv2.imshow('image', img_binary_sobel)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
+    '''
     return img_binary_sobel, img_binary
 
 
@@ -113,16 +113,3 @@ def sobel(img):
 	abs_grad_y = cv2.convertScaleAbs(grad_y)
 	dst = cv2.addWeighted(abs_grad_x,0.5,abs_grad_y,0.5,0)
 	return dst
-
-
-#http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_houghlines/py_houghlines.html
-def hough(img): #img is a binarized image
-    #First parameter, Input image should be a binary image, so apply threshold or use canny edge detection before finding applying hough transform. Second and third parameters are \rho and \theta accuracies respectively. Fourth argument is the threshold, which means minimum vote it should get for it to be considered as a line. Remember, number of votes depend upon number of points on the line. So it represents the minimum length of line that should be detected.
-    quit()
-    params = cv2.HoughLines(img, 1,np.pi/180, 100) #params 2 and 3 i got somewhere, 4 we should tune
-    #arr is array of (rho, theta) for each line above voting threshold
-    for i in xrange(len(params)):
-        degrees = 180 * params[i][0][1] / math.pi
-        params[i][0][1] = degrees #all angles are positive degree values
-    return params #returns all params (rho, theta)
-
