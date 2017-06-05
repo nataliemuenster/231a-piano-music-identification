@@ -91,8 +91,8 @@ if __name__ == '__main__':
     [whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes] = key_detection.detect_keys(binary_rectified, binary_rectified_sobel, start_key)
     
     #print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
-    white_key_width = np.average(whiteKeys[:,3] - whiteKeys[:,2])
-    print "width:", white_key_width
+    black_key_width = np.average(blackKeys[:,3] - blackKeys[:,2])
+    print "width:", black_key_width
 
     #Mask off hands from each frame first? Then make it black and white?
     #Rectify all the frames we need
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     print "all frames rectified"
     #Now detectNotesPressed
     #find light source based on shape of shadows?? then decide how shadows determine right or left key
-    key_x_coords = note_detection.allFrameDiffs(frames, white_key_width)
+    key_x_coords = note_detection.allFrameDiffs(frames, black_key_width)
     print "x_coords:", key_x_coords
 	#what should be returned from noteDetection!!??
 
