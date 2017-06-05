@@ -60,8 +60,6 @@ def get_corners(img):
     cv2.destroyAllWindows()
 
 
-
-
 if __name__ == '__main__':
     
     #get User's input
@@ -79,9 +77,7 @@ if __name__ == '__main__':
     #extract images from frames. Doesn't actually do anything rn...
     #frames = image_extraction.parse_video(video_path)
     
-    
-    #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
-    base_img = base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
+    base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
     base_img = base_img.astype(np.uint8)
     
     pts_src = np.asarray(right_clicks)
