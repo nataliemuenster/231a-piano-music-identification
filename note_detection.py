@@ -59,7 +59,7 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
 
             #check if there is  black key that covers this region
             #black_key = blackKeys[np.where(blackKeys[2, :] < x and blackKeys[3, :] > x)]
-            print "x ", x
+            #print "x ", x
             #print "blackKeys[2, :] ", blackKeys[:, 2]
             
             # print "blackKeys[3, :] ", blackKeys[:, 3]
@@ -71,7 +71,6 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
             """
 
             index = np.intersect1d(np.where(blackKeys[:, 2] < x)[0], np.where(blackKeys[:, 3] > x)[0])
-            print "index", index
 
             if len(index) != 0:
                 note = black_notes[index[0]] + " sharp"
@@ -86,11 +85,14 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
 
                 #if it matches no black key it must be a white key
                 index = np.intersect1d(np.where(whiteKeys[:, 2] < x)[0], np.where(whiteKeys[:, 3] > x)[0])
-                print "index", index
-
-                note = white_notes[index[0]]
-                #notes.append(note)
-                print note
+                
+                if len(index) != 0:
+                    print "could not detect note"
+                
+                else:
+                    note = white_notes[index[0]]
+                    #notes.append(note)
+                    print note
 
 	##only rectify/preprocess every 5 frames to avoid extra work
 	#NO!take top half of images, to get rid of hands

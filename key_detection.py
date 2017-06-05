@@ -27,7 +27,6 @@ def detect_keys(img_binary, img_binary_sobel, start_key):
 
 def detect_white_keys(im_bw, startKey):
     imheight = im_bw.shape[0]
-    
     im_bottom = im_bw[int(imheight * (2/3)):imheight, :]
 
     #gather a few sample keys to find the average width of a white key
@@ -50,29 +49,15 @@ def detect_white_keys(im_bw, startKey):
                 
                 start_edge = pixel
             else:  #if starting in the middle of a gap between keys, move to closest start of next key
-                #print "im_bottom[int(im_bottom.shape[0]/2), pixel] ", im_bottom[int(im_bottom.shape[0]/2), pixel]
-
                 while im_bottom[int(im_bottom.shape[0]/2), pixel] > threshold: #move past gap
                     pixel += 1
                 start_edge = pixel
-                
-                """
-                while im_bottom[int(im_bottom.shape[0]/2), pixel] < threshold:
-                            pixel += 1
     
-            # get size of gap and move to the start edge of the key to the right
-            while im_bottom[int(im_bottom.shape[0]/2), pixel] > threshold: #move past the gap btwn keys
-                pixel += 1
-                gap_size += 1
-            start_edge = pixel
-            firstKey = False
-            """
             firstKey = False
 
         else:
             while im_bottom[int(im_bottom.shape[0]/2), pixel] < threshold: #move to end edge of keys (key is black in binary sobel)
                 pixel += 1
-                    #print "pixel, start_edge ", pixel, start_edge
             if (abs(start_edge - pixel) > wk_min_width): #if you detected a key
                 widths.append(abs(start_edge - pixel))
                 numSampleKeys += 1
@@ -89,33 +74,9 @@ def detect_white_keys(im_bw, startKey):
                 while im_bottom[int(im_bottom.shape[0]/2), pixel] > threshold:
                     pixel += 1
 
-        """
-        if im_bottom[int(im_bottom.shape[0]/2), pixel] < threshold: #if in blackspace in the middle of a white #key (using binarized sobel image)
-            pixel += 1
-        
-        else:
-            if firstKey == True:
-                firstKey = False
-                start = pixel
-                first_edge = pixel
-            else:
-                if (abs(start - pixel) > wk_min_width):
-                    widths.append(abs(start - pixel))
-                    numSampleKeys += 1
-                    start = pixel
-
-            #move past white space to get to next key
-            while im_bottom[int(im_bottom.shape[0]/2), pixel] > threshold:
-                pixel += 1
-            start = pixel
-      
-            """
     
     gap_width = sum(gap_sizes)/numGaps
     wk_width = sum(widths)/numSampleKeys
-    #print "gap_width ", gap_width
-    #print "wk_width ", wk_width
-    #print "number of widths ", im_bottom.shape[1]/(wk_width + gap_width)
     whiteKeys = np.zeros((52, 4))
 
     last_edge = start_edge
@@ -126,20 +87,15 @@ def detect_white_keys(im_bw, startKey):
     while first_edge < (im_bottom.shape[1] - wk_width - gap_width): #work across the photo towards the right
         if numWhiteKeys < 52:
             first_edge = last_edge + gap_width
-            
-            #print "numWhiteKeys, whiteKeys.shape ", numWhiteKeys, whiteKeys.shape
             whiteKeys[numWhiteKeys-1][0] = 0
             whiteKeys[numWhiteKeys-1][1] = imheight
             whiteKeys[numWhiteKeys-1][2] = first_edge
             last_edge = first_edge + wk_width
             whiteKeys[numWhiteKeys-1][3] = last_edge
-            #print "start and end of key ",first_edge, last_edge
             numWhiteKeys += 1
         else :
             break
-              
-#print "numWhiteKeys in key detection", numWhiteKeys
-#print "whiteKeys ", whiteKeys
+
     last_edge = start_edge
     first_edge = start_edge
     while first_edge > wk_width + gap_width: #work across the photo towards the left
@@ -155,8 +111,6 @@ def detect_white_keys(im_bw, startKey):
             numWhiteKeys += 1
         else :
             break
-    print "numWhiteKeys ", numWhiteKeys
-    
 
     nonzero_row_indices = []
     zeros = np.zeros((4, 1))
@@ -170,8 +124,6 @@ def detect_white_keys(im_bw, startKey):
     ind = np.argsort(whiteKeys[:, 2])
 
     sorted_white_keys = whiteKeys[ind]
-
-#print "whiteKeys in key detection ", sorted_white_keys
 
 
     #correlate each key with its note based on the left-most-note passed in
