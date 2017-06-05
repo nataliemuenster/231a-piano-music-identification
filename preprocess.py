@@ -7,25 +7,47 @@ import os
 import math
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import matplotlib.image as mpimg
 import argparse
+#import pymouse #SARAH YOU NEED TO INSTALL THIS PROBABLY
 
 
 #change output image names according to each video
-def parse_video(video):
-	print "Parse_video:", video
-	return
+
+def get_frames(video_name):
+	#print "Parse_video:", video
+    video_path = "./data/videos/" + video_name + ".mp4"
+    images_dir = "./data/" + video_name + "_images"
+
+    #if not yet parsed, parse. Else just return images
+	
+    if not os.path.exists(images_dir):
+        #os.mkdir(images_dir)
+        #process video and put all frames in this dir
+        print "Please extract the frames from the video using ffmpeg, then try again."
+        quit()
+    
+    #loops through all the images in the video directory
+    image_list = os.listdir(images_dir)
+    frames = []
+    frameNum = 0
+    for img_name in image_list:
+        img = cv2.imread(os.path.join(images_dir,img_name))
+        if img is not None and frameNum%5 == 0: #we gather only every 5 frames
+                img = img.astype(np.uint8)
+                #img = image_extraction.sobel(img)
+                frames.append(img)
+        frameNum += 1
+    return frames
 
 
 #Takes in an image of a piano, asks for the 4 corner points, and returns the rectified and cropped image, with consistent ratios of size of black to white keys
-def rectify(img, pts_src): #original base_img (img2 example is of size: 1280x720)
+def rectify_first(img, pts_src): #original base_img (img2 example is of size: 1280x720)
     #how to make a GUI to show first image and let user click corners:
     size = img.shape
-    #corners = get_corners(img, size)
     #pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]).astype(float) #in x,y
     pts_src = pts_src.astype(float)
-    #print pts_src
     pts_dst = np.array([[0,0],[0,size[0]],[size[1],0],[size[1],size[0]]]).astype(float) #in x,y
-    
     #print "pts_src, pts_dst", pts_src, pts_dst
     
     h, status = cv2.findHomography(pts_src, pts_dst)
@@ -37,7 +59,18 @@ def rectify(img, pts_src): #original base_img (img2 example is of size: 1280x720
     """
     
     #cv2.imwrite("video_2-0001_rectified.jpg", img_rectified)
-    return img_rectified 
+    params = np.array([pts_src, pts_dst])
+    return img_rectified, params
+
+#rectifies and converts to greyscale all images
+def rectify_all(frames, params):
+    size = frames[0].shape
+    for f in xrange(len(frames)):
+        frame = cv2.cvtColor(frames[f], cv2.COLOR_RGB2GRAY)
+        h, status = cv2.findHomography(params[0], params[1])
+        frames[f] = cv2.warpPerspective(frame, h, (size[1], size[0]))
+    return frames
+
 
 def getBinaryImages(base_img):
     img_grey = cv2.cvtColor(base_img, cv2.COLOR_RGB2GRAY)
@@ -50,7 +83,7 @@ def getBinaryImages(base_img):
     #cv2.imwrite("video_2-0001_sobel.jpg", img_sobel)
     #apply thresholding to binarize image: http://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html
     thresh, img_binary_sobel = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-
+    '''
     cv2.imshow('image', img_binary)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -58,7 +91,7 @@ def getBinaryImages(base_img):
     cv2.imshow('image', img_binary_sobel)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
+    '''
     return img_binary_sobel, img_binary
 
 
@@ -80,16 +113,3 @@ def sobel(img):
 	abs_grad_y = cv2.convertScaleAbs(grad_y)
 	dst = cv2.addWeighted(abs_grad_x,0.5,abs_grad_y,0.5,0)
 	return dst
-
-
-#http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_houghlines/py_houghlines.html
-def hough(img): #img is a binarized image
-    #First parameter, Input image should be a binary image, so apply threshold or use canny edge detection before finding applying hough transform. Second and third parameters are \rho and \theta accuracies respectively. Fourth argument is the threshold, which means minimum vote it should get for it to be considered as a line. Remember, number of votes depend upon number of points on the line. So it represents the minimum length of line that should be detected.
-    quit()
-    params = cv2.HoughLines(img, 1,np.pi/180, 100) #params 2 and 3 i got somewhere, 4 we should tune
-    #arr is array of (rho, theta) for each line above voting threshold
-    for i in xrange(len(params)):
-        degrees = 180 * params[i][0][1] / math.pi
-        params[i][0][1] = degrees #all angles are positive degree values
-    return params #returns all params (rho, theta)
-
