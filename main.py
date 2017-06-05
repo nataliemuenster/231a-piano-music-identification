@@ -68,8 +68,6 @@ if __name__ == '__main__':
     base_img = base_img.astype(np.uint8) #need this??
     get_corners(base_img)
     
-    #kernel = np.ones((5,5),np.uint8) #for dilation/erosion to fill in gaps, used for masking
-    
     pts_src = np.asarray(right_clicks)
     print "found corners:", right_clicks
     
@@ -84,7 +82,7 @@ if __name__ == '__main__':
 
     #extract images from frames and rectifies them acording to params of first image
     frames = preprocess.get_frames(video_name)
-    print "preprocessed frames", len(frames)
+    print "preprocessed frames"
 
     [binary_rectified_sobel, binary_rectified] = preprocess.getBinaryImages(base_img_rectified)
     #print "got binary"
@@ -103,8 +101,10 @@ if __name__ == '__main__':
     #find light source based on shape of shadows?? then decide how shadows determine right or left key
     key_x_coords = note_detection.allFrameDiffs(frames, black_key_width)
     print "x_coords:", key_x_coords
-	#what should be returned from noteDetection!!??
 
+    note_detection.map_to_key(key_x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes)
+    
+    
 
     print "done with main"
 
