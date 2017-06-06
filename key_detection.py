@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from skimage.segmentation import clear_border
 from skimage.morphology import label
-from string import ascii_uppercase
+from string import ascii_lowercase
 
 
 WB_key_len_ratio = 0.65
@@ -199,11 +199,11 @@ def detect_black_keys(im_bw, start_key):
 
     black_notes = []
 
-    blackNoteString = "A0C1D1F1G1A1C2D2F2G2A2C3D3F3G3A3C4D4F4G4A4C5D5F5G5A5C6D6F6G6A6C7D7F7G7A7"
+    blackNoteString = "a0c1d1f1g1a1c2d2f2g2a2c3d3f3g3a3c4d4f4g4a4c5d5f5g5a5c6d6f6g6a6c7d7f7g7a7"
     offset = blackNoteString.find(start_key)
     if offset == -1: #if the start white key did not have a black key to its right
-        found = ascii_uppercase.find(start_key[0])
-        nextBlackKey = ascii_uppercase[found + 1] + start_key[1]
+        found = ascii_lowercase.find(start_key[0])
+        nextBlackKey = ascii_lowercase[found + 1] + start_key[1]
         offset = blackNoteString.find(nextBlackKey)
 
     if im_top[im_top.shape[0]-1, 0] > threshold: #if the edge doesn't start with a black key

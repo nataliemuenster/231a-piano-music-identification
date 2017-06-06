@@ -54,7 +54,6 @@ def allFrameDiffs(video_name, size, black_key_width):
 def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes):
 
     notes = []
-    failed_mappings = 0
     for i in range(0, len(x_coords)):
         frame_x_coords = x_coords[i]
         simultaneous_notes = []
@@ -63,7 +62,7 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
             index = np.intersect1d(np.where(blackKeys[:, 2] < x)[0], np.where(blackKeys[:, 3] > x)[0])
 
             if len(index) != 0: #if there is a black key region that matches
-                note = black_notes[index[0]] + " sharp"
+                note = black_notes[index[0]]
                 simultaneous_notes.append(note)
                 break
             else:
@@ -71,8 +70,7 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
                 index = np.intersect1d(np.where(whiteKeys[:, 2] < x)[0], np.where(whiteKeys[:, 3] > x)[0])
                 
                 if len(index) == 0: #if there is no region that matches (falls in a gap region)
-                    print "could not match key to detected press"
-                    failed_mappings += 1
+                    simultaneous_notes.append("x")
                 
                 else: #if there is a white key region that matches
                     note = white_notes[index[0]]
