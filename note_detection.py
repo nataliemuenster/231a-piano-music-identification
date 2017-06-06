@@ -77,5 +77,5 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
                     simultaneous_notes.append(note)
         notes.append(simultaneous_notes)
 
-    print notes, len(notes)
+    #print notes, len(notes)
     return notes

@@ -1,17 +1,31 @@
-def totalError(true_file_name, detected):
+def totalError(video_name, detected):
+    true_file_name = video_name + "_solution.txt"
     true_keys = []
+    detected_keys = []
     with open(true_file_name) as true_file:
-        for line in true_file_name:
+        for line in true_file:
             #if file formatted wrong, return error
-            true_keys.append(line.split(", "))
+            line = line.replace(" \n", "")
+            line = line.replace("\n", "")
+            true_keys.extend(line.split(", "))
+    for pressed in detected:
+        detected_keys.extend(pressed)
+
+    print "correct length vs our length:", len(true_keys), len(detected_keys)
+    print "correct:", true_keys
+    print "ours:", detected_keys
+
 
 # you may also want to remove whitespace characters like `\n` at the end of each line
-content = [x.strip() for x in content] 
+#content = [x.strip() for x in content] 
 #need to strip ""? spaces too
+
+
+#def calculateDist(true, detected):
 
 #Process minimum edit distance using Levenshtein Distance between quote inputs and one title for spellchecking
 #Limits edit distance to 4 before it automatically fails
-def calculateDistance(true, detected):
+'''def calculateDistance(true, detected):
     if len(quote) > 0 and len(title) == 0:
         return len(quote)
     elif len(quote) == 0 and len(title) > 0:
@@ -29,7 +43,6 @@ def calculateDistance(true, detected):
         prevRow = currRow
 
     return prevRow[-1]
+'''
 
-if __name__ == '__main__':
-    testArray = [['D'], ['A', 'B'], ['D', 'F', 'G']]
-    totalError = totalError("test.file.txt", )
+
