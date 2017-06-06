@@ -52,7 +52,7 @@ def allFrameDiffs(video_name, size, black_key_width):
 		x_coords[f1-1] = key_xs
 	#print "x_coords:", x_coords
 	x_coords = list(filter(None, x_coords))
-	return np.asarray(x_coords) #list of lists -- each index is a frame difference, which may have 0 or more keys pressed
+	return x_coords #list of lists -- each index is a frame difference, which may have 0 or more keys pressed
 
 
 def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes):
@@ -95,7 +95,7 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
                 #if it matches no black key it must be a white key
                 index = np.intersect1d(np.where(whiteKeys[:, 2] < x)[0], np.where(whiteKeys[:, 3] > x)[0])
                 print "index ", index
-                
+
                 if len(index) == 0:
                     print "could not detect note"
                 
