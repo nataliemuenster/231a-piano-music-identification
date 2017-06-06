@@ -12,7 +12,7 @@ from skimage.segmentation import clear_border
 from skimage.morphology import label
 
 threshold = 50
-pixel_buffer = 10
+pixel_buffer = 5
 
 def allFrameDiffs(video_name, size, black_key_width):
 	images_dir = "./data/" + video_name + "_rectified" #using the rectified images
@@ -66,7 +66,7 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
 
             #check if there is  black key that covers this region
             #black_key = blackKeys[np.where(blackKeys[2, :] < x and blackKeys[3, :] > x)]
-            #print "x ", x
+            print "x ", x
             #print "blackKeys[2, :] ", blackKeys[:, 2]
             
             # print "blackKeys[3, :] ", blackKeys[:, 3]
@@ -84,14 +84,17 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
                 print note
                 break
             else:
-                """
-                print "np.where(whiteKeys[2, :] < x)[0] ", np.where(whiteKeys[:, 2] < x)[0]
-                print "np.where(whiteKeys[3, :] > x)[0] ", np.where(whiteKeys[:, 3] > x)[0]
-                print "whiteKeys ", whiteKeys
-                """
+                
+                print "np.where(whiteKeys[2, :] < x)[0] ", np.where(whiteKeys[19, 2] < x)[0]
+                print "np.where(whiteKeys[3, :] > x)[0] ", np.where(whiteKeys[19, 3] > x)[0]
+                print "whiteKeys[19, :] ", whiteKeys[19, :]
+                print "whiteKeys[20, :] ", whiteKeys[20, :]
+                #print "whiteKeys ", whiteKeys
+                
 
                 #if it matches no black key it must be a white key
                 index = np.intersect1d(np.where(whiteKeys[:, 2] < x)[0], np.where(whiteKeys[:, 3] > x)[0])
+                print "index ", index
                 
                 if len(index) == 0:
                     print "could not detect note"
