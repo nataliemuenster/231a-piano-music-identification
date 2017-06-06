@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from skimage.segmentation import clear_border
 from skimage.morphology import label
+from string import ascii_uppercase
 
 
 WB_key_len_ratio = 0.65
@@ -19,9 +20,9 @@ wk_min_width = 15
 def detect_keys(img_binary, img_binary_sobel, start_key):
         
     #get an array defining each key
-    [whiteKeys, numWhiteKeys, offset, white_notes] = detect_white_keys(img_binary_sobel, start_key)
+    [whiteKeys, numWhiteKeys, white_notes] = detect_white_keys(img_binary_sobel, start_key)
     
-    [blackKeys, numBlackKeys, black_notes] = detect_black_keys(img_binary, offset)
+    [blackKeys, numBlackKeys, black_notes] = detect_black_keys(img_binary, start_key)
 
     return whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
 
@@ -39,9 +40,9 @@ def detect_white_keys(im_bw, startKey):
     sorted_white_keys = organizeWhiteKeys(whiteKeys)
 
 # print sorted_white_keys
-    [white_notes, offset] = getWhiteNotes(startKey, whiteKeys)
+    white_notes = getWhiteNotes(startKey, sorted_white_keys)
 
-    return sorted_white_keys, numWhiteKeys, offset, white_notes
+    return sorted_white_keys, numWhiteKeys, white_notes
 
 #gather a few sample keys to find the average width of a white key and ave width of key gap
 def findAverageWidths(im_bottom):
@@ -98,26 +99,15 @@ def findAverageWidths(im_bottom):
 
 #correlate each key with its note based on the left-most-note passed in
 def getWhiteNotes(startKey, whiteKeys):
-    offset = 0 #default A
-    if startKey == "B":
-        offset = 1
-    elif startKey == "C":
-        offset = 2
-    elif startKey == "D":
-        offset = 3
-    elif startKey == "E":
-        offset = 4
-    elif startKey == "F":
-        offset = 5
-    else: # if G
-        offset = 6
-    
-    #whiteKeyNotes = "A0B0C1D1E1F1G1A1B1C2D2E2F2G2A2B2C3D3E3F3G3A3B3C4D4E4F4G4A4B4C5D5E5F5G5A5B5C6D6E6F6G6A6B6C7D7E7F7G7A7B7C8"
+    whiteNoteString = "A0B0C1D1E1F1G1A1B1C2D2E2F2G2A2B2C3D3E3F3G3A3B3C4D4E4F4G4A4B4C5D5E5F5G5A5B5C6D6E6F6G6A6B6C7D7E7F7G7A7B7C8"
+    offset = whiteNoteString.find(startKey)
+    print "whiteKeys.shape[0] ", whiteKeys.shape[0]
     white_notes = []
-    for i in range(0,whiteKeys.shape[0]):
-        white_notes.append("ABCDEFG"[(i + offset) % 7])
+    for i in range(0,whiteKeys.shape[0] * 2, 2):
+        white_notes.append(whiteNoteString[i + offset : i + offset + 2])
+        print "whiteNoteString[i + offset : i + offset + 2]", whiteNoteString[i + offset : i + offset + 2]
 
-    return white_notes, offset
+    return white_notes
 
 #get rid of empty rows and sort key regions
 def organizeWhiteKeys(whiteKeys):
@@ -176,7 +166,7 @@ def workTowardLeft(whiteKeys, numWhiteKeys, start_edge, wk_width, gap_width, imh
 
 
 #detect black keys on the binary image
-def detect_black_keys(im_bw, offset):
+def detect_black_keys(im_bw, start_key):
     white_key_len = im_bw.shape[0]
     im_top = im_bw[0:int(white_key_len/2), :]
     [blackKeys, numBlackKeys] = get_black_key_boundaries(white_key_len, im_top)
@@ -196,15 +186,23 @@ def detect_black_keys(im_bw, offset):
 
     black_notes = []
 
-    #blackNoteString_Forward = "A0C1D1F1G1 ACDFG ACDFG ACDFG ACDFG ACDFG ACDFG A
+    blackNoteString = "A0C1D1F1G1A1C2D2F2G2A2C3D3F3G3A3C4D4F4G4A4C5D5F5G5A5C6D6F6G6A6C7D7F7G7A7"
+    offset = blackNoteString.find(start_key)
+    if offset == -1: #if the start white key did not have a black key to its right
+        found = ascii_uppercase.find(start_key[0])
+        nextBlackKey = ascii_uppercase[found + 1] + start_key[1]
+        print "nextBlackKey ", nextBlackKey
+        offset = blackNoteString.find(nextBlackKey)
+    print "blackKeys.shape[0]: ", blackKeys.shape[0]
 
-    #blackNoteString_Backward = "A0B0C1D1E1F1G1A1B1C2D2E2F2G2A2B2C3D3E3F3G3A3B3C4D4E4F4G4A4B4C5D5E5F5G5A5B5C6D6E6F6G6A6B6C7D7E7F7G7A7B7C8"
     if im_top[im_top.shape[0]-1, 0] > threshold: #if the edge doesn't start with a black key
-        for i in range(0,blackKeys.shape[0]):
-            black_notes.append("ACDFG"[(i + offset) % 5]) #first black key will be the sharp following first white key
+        for i in range(0,blackKeys.shape[0] * 2, 2):
+            black_notes.append(blackNoteString[i + offset - 2: i + offset]) #first black key will be the sharp following first white key
+            print "behind blackNoteString[i + offset - 1: i + offset] ", blackNoteString[i + offset - 2: i + offset]
     else : #if edge starts with black key
-        for i in range(0,blackKeys.shape[0]):
-            black_notes.append("GACDF"[(i + offset) % 5]) #first black key will be the sharp before first white key
+        for i in range(0,blackKeys.shape[0] * 2, 2):
+            black_notes.append(blackNoteString[i + offset: i + offset + 2]) #first black key will be the sharp before first white key
+            print "ahead blackNoteString[i + offset: i + offset + 1] ", blackNoteString[i + offset: i + offset + 2]
 
     return blackKeys, numBlackKeys, black_notes
 

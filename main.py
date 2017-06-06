@@ -62,12 +62,27 @@ if __name__ == '__main__':
     base_img_name = video_name + "-0001.jpg" #this might vary based on when the piano is visible w/o hands
 
     #get User's input
-    start_key = input("Please enter the note corresponding to the left most white key in the format (A, B, C, D, E, F, or G) with quotes around the capital letter: ")
+    start_key = input("Please enter the note corresponding to the left most white key with the number corresponding to its octive in the format (ex: 'A3') with quotes around the two characters: ")
+    
+    #error check input
+    letters = "ABCDEFG"
+    numbers = "01234567"
+    if (letters.find(start_key[0]) == -1 or numbers.find(start_key[1]) == -1):
+        print "ERROR: The key you entered was invalid!"
+        start_key = input("Please enter the note corresponding to the left most white key with the number corresponding to its octive in the format (ex: 'A3') with quotes around the two characters: ")
 
     base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
     base_img = base_img.astype(np.uint8) #need this??
     get_corners(base_img)
-    
+
+    #error check input
+    if len(right_clicks) != 4:
+        print "before right_clicks ", right_clicks
+        right_clicks = list()
+        print "after right_clicks ", right_clicks
+        print "Please reselect corners taking care to choose only 4 points"
+        get_corners(base_img)
+
     pts_src = np.asarray(right_clicks)
     print "found corners:", right_clicks
     
