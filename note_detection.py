@@ -28,8 +28,8 @@ def allFrameDiffs(video_name, size, black_key_width):
 	frameNum = 0
 	prev_frame = cv2.imread(os.path.join(images_dir,image_list[0]), cv2.IMREAD_GRAYSCALE) #first image
 	prev_crop = prev_frame[0:crop_height, :]
+    
     #loop over pairs of frames, already x frames apart
-	
 	for f1 in xrange(1, len(image_list)):
 		curr_frame = cv2.imread(os.path.join(images_dir,image_list[f1]), cv2.IMREAD_GRAYSCALE)
 		curr_crop = curr_frame[0:crop_height, :]
@@ -39,15 +39,12 @@ def allFrameDiffs(video_name, size, black_key_width):
 		pixel = 0
 
 		key_xs = [i for i,val in enumerate(diff[x_height, :]) if val > threshold]
-		#print "initial key_xs for ", f1, "=", key_xs
 		#eliminate duplicates in list if they are too close to each other:
 		if len(key_xs) > 1:
 			for i in xrange(len(key_xs)-1, 0, -1): #iterate backwards
 				if abs(key_xs[i] - key_xs[i-1]) < min_dist:
-					key_xs.pop(i)#only keep first one found (is better way to average them??)
+					key_xs.pop(i)#only keep first one found (current method for averaging)
 
-        #maybe take a sampling of two different y heights to see if it's just in black, or also white??
-		#print "filtered key_xs for ", f1-1, " = ", key_xs
 		prev_crop = curr_crop
 		x_coords[f1-1] = key_xs
 	x_coords = list(filter(None, x_coords))
@@ -60,29 +57,25 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
 
     for i in range(0, len(x_coords)):
         frame_x_coords = x_coords[i]
+        simultaneous_notes = []
         for j in range(0, len(frame_x_coords)):
             x = frame_x_coords[j] + pixel_buffer
-
             index = np.intersect1d(np.where(blackKeys[:, 2] < x)[0], np.where(blackKeys[:, 3] > x)[0])
 
-            if len(index) != 0:
+            if len(index) != 0: #if there is a black key region that matches
                 note = black_notes[index[0]] + " sharp"
-                notes.append(note)
+                simultaneous_notes.append(note)
                 break
             else:
                 #if it matches no black key it must be a white key
                 index = np.intersect1d(np.where(whiteKeys[:, 2] < x)[0], np.where(whiteKeys[:, 3] > x)[0])
                 
-                if len(index) == 0:
+                if len(index) == 0: #if there is no region that matches (falls in a gap region)
                     print "could not match key to detected press"
                 
-                else:
+                else: #if there is a white key region that matches
                     note = white_notes[index[0]]
-                    notes.append(note)
+                    simultaneous_notes.append(note)
+        notes.append(simultaneous_notes)
 
     print notes, len(notes)
-	##only rectify/preprocess every 5 frames to avoid extra work
-	#NO!take top half of images, to get rid of hands
-	#find the x coordinate wth the most white
-	#look for where black turns to white, return that line to sarah (using threshold, get from range of intensity values)
-	#Give Sarah the x (starting at 1/3 down from the top left side of image)

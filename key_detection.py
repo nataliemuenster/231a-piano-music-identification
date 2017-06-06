@@ -112,6 +112,7 @@ def getWhiteNotes(startKey, whiteKeys):
     else: # if G
         offset = 6
     
+    #whiteKeyNotes = "A0B0C1D1E1F1G1A1B1C2D2E2F2G2A2B2C3D3E3F3G3A3B3C4D4E4F4G4A4B4C5D5E5F5G5A5B5C6D6E6F6G6A6B6C7D7E7F7G7A7B7C8"
     white_notes = []
     for i in range(0,whiteKeys.shape[0]):
         white_notes.append("ABCDEFG"[(i + offset) % 7])
@@ -195,6 +196,9 @@ def detect_black_keys(im_bw, offset):
 
     black_notes = []
 
+    #blackNoteString_Forward = "A0C1D1F1G1 ACDFG ACDFG ACDFG ACDFG ACDFG ACDFG A
+
+    #blackNoteString_Backward = "A0B0C1D1E1F1G1A1B1C2D2E2F2G2A2B2C3D3E3F3G3A3B3C4D4E4F4G4A4B4C5D5E5F5G5A5B5C6D6E6F6G6A6B6C7D7E7F7G7A7B7C8"
     if im_top[im_top.shape[0]-1, 0] > threshold: #if the edge doesn't start with a black key
         for i in range(0,blackKeys.shape[0]):
             black_notes.append("ACDFG"[(i + offset) % 5]) #first black key will be the sharp following first white key
