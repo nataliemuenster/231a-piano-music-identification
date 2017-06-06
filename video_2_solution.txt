@@ -1,8 +1,8 @@
-C3 sharp, D3 sharp 
-F3 sharp, G3 sharp, A3 sharp  
-C3 sharp, D3 sharp 
-F2 sharp, G2 sharp, A2 sharp  
-C2 sharp, D2 sharp 
+c3, d3 
+f3, g3, a3  
+c3, d3 
+f2, g2, a2  
+c2, d2 
 C3
 B2
 A2
@@ -15,29 +15,29 @@ G3
 A3
 C3
 C3
-C3 sharp
+c3
 D3
-C3 sharp
-D3 sharp
+c3
+d3
 D3
-D3 sharp
+d3
 E3
-D3 sharp
-F3 sharp
+d3
+f3
 F3
-F3 sharp
+f3
 G3
-F3 sharp
-G3 sharp
+f3
+g3
 G3
-G3 sharp
+g3
 A3
-G3 sharp
+g3
 A3
-A3 sharp
-A3 sharp
+a3
+a3
 B3 
-A3 sharp
+a3
 C2, D2, E2, F2, G2, C3, D3, E3, F3, G3
 C3
 D3 
