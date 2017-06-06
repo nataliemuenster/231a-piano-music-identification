@@ -50,60 +50,37 @@ def allFrameDiffs(video_name, size, black_key_width):
 		#print "filtered key_xs for ", f1-1, " = ", key_xs
 		prev_crop = curr_crop
 		x_coords[f1-1] = key_xs
-	#print "x_coords:", x_coords
 	x_coords = list(filter(None, x_coords))
-	return np.asarray(x_coords) #list of lists -- each index is a frame difference, which may have 0 or more keys pressed
+	return x_coords #list of lists -- each index is a frame difference, which may have 0 or more keys pressed
 
 
 def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes):
 
-    #notes = []
-    for i in range(0, x_coords.shape[0]):
-        frame_x_coords = x_coords[i]
-        
-        for j in range(0, frame_x_coords.shape[0]):
-            x = frame_x_coords[j] + pixel_buffer
+    notes = []
 
-            #check if there is  black key that covers this region
-            #black_key = blackKeys[np.where(blackKeys[2, :] < x and blackKeys[3, :] > x)]
-            print "x ", x
-            #print "blackKeys[2, :] ", blackKeys[:, 2]
-            
-            # print "blackKeys[3, :] ", blackKeys[:, 3]
-            """
-            print "np.where(blackKeys[2, :] < x)[0] ", np.where(blackKeys[:, 2] < x)[0]
-            print "np.where(blackKeys[3, :] > x)[0] ", np.where(blackKeys[:, 3] > x)[0]
-            print "blackKeys[3, :] ", blackKeys[3, :]
-            print "blackKeys[4, :] ", blackKeys[4, :]
-            """
+    for i in range(0, len(x_coords)):
+        frame_x_coords = x_coords[i]
+        for j in range(0, len(frame_x_coords)):
+            x = frame_x_coords[j] + pixel_buffer
 
             index = np.intersect1d(np.where(blackKeys[:, 2] < x)[0], np.where(blackKeys[:, 3] > x)[0])
 
             if len(index) != 0:
                 note = black_notes[index[0]] + " sharp"
-                print note
+                notes.append(note)
                 break
             else:
-                
-                print "np.where(whiteKeys[2, :] < x)[0] ", np.where(whiteKeys[19, 2] < x)[0]
-                print "np.where(whiteKeys[3, :] > x)[0] ", np.where(whiteKeys[19, 3] > x)[0]
-                print "whiteKeys[19, :] ", whiteKeys[19, :]
-                print "whiteKeys[20, :] ", whiteKeys[20, :]
-                #print "whiteKeys ", whiteKeys
-                
-
                 #if it matches no black key it must be a white key
                 index = np.intersect1d(np.where(whiteKeys[:, 2] < x)[0], np.where(whiteKeys[:, 3] > x)[0])
-                print "index ", index
                 
                 if len(index) == 0:
-                    print "could not detect note"
+                    print "could not match key to detected press"
                 
                 else:
                     note = white_notes[index[0]]
-                    #notes.append(note)
-                    print note
+                    notes.append(note)
 
+    print notes, len(notes)
 	##only rectify/preprocess every 5 frames to avoid extra work
 	#NO!take top half of images, to get rid of hands
 	#find the x coordinate wth the most white

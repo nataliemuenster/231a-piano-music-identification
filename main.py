@@ -100,7 +100,7 @@ if __name__ == '__main__':
     #Now detectNotesPressed
     #find light source based on shape of shadows?? then decide how shadows determine right or left key
     key_x_coords = note_detection.allFrameDiffs(video_name, base_img_rectified.shape, black_key_width)
-    print "x_coords:", key_x_coords
+    #print "x_coords:", key_x_coords
 
     note_detection.map_to_key(key_x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes)
     

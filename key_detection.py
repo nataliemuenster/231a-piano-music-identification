@@ -25,19 +25,20 @@ def detect_keys(img_binary, img_binary_sobel, start_key):
 
     return whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
 
+#detect white keys on the binary sobel image
 def detect_white_keys(im_bw, startKey):
     imheight = im_bw.shape[0]
     im_bottom = im_bw[int(imheight * (2/3)):imheight, :]
 
     [gap_width, wk_width, start] = findAverageWidths(im_bottom)
-    print "gap_width, wk_width, start ", gap_width, wk_width, start
+    # print "gap_width, wk_width, start ", gap_width, wk_width, start
 
     [numWhiteKeys, whiteKeys] = workTowardRight(start, wk_width, gap_width, im_bottom.shape[1], imheight)
     [numWhiteKeys, whiteKeys] = workTowardLeft(whiteKeys, numWhiteKeys, start, wk_width, gap_width, imheight)
     
     sorted_white_keys = organizeWhiteKeys(whiteKeys)
 
-    print sorted_white_keys
+# print sorted_white_keys
     [white_notes, offset] = getWhiteNotes(startKey, whiteKeys)
 
     return sorted_white_keys, numWhiteKeys, offset, white_notes
@@ -95,8 +96,8 @@ def findAverageWidths(im_bottom):
 
     return gap_width, wk_width, start
 
+#correlate each key with its note based on the left-most-note passed in
 def getWhiteNotes(startKey, whiteKeys):
-    #correlate each key with its note based on the left-most-note passed in
     offset = 0 #default A
     if startKey == "B":
         offset = 1
@@ -117,6 +118,7 @@ def getWhiteNotes(startKey, whiteKeys):
 
     return white_notes, offset
 
+#get rid of empty rows and sort key regions
 def organizeWhiteKeys(whiteKeys):
     nonzero_row_indices = []
     zeros = np.zeros((4, 1))
@@ -132,6 +134,7 @@ def organizeWhiteKeys(whiteKeys):
 
     return sorted_white_keys
 
+#from the first detected edge in the middle of the keyboard, mark regions going right
 def workTowardRight(start_edge, wk_width, gap_width, imwidth, imheight):
     whiteKeys = np.zeros((52, 4))
     last_edge = start_edge
@@ -151,6 +154,7 @@ def workTowardRight(start_edge, wk_width, gap_width, imwidth, imheight):
             break
     return numWhiteKeys, whiteKeys
 
+#from the same first detected edge in the middle of the keyboard, mark regions going left
 def workTowardLeft(whiteKeys, numWhiteKeys, start_edge, wk_width, gap_width, imheight):
     last_edge = start_edge
     first_edge = start_edge
@@ -169,6 +173,8 @@ def workTowardLeft(whiteKeys, numWhiteKeys, start_edge, wk_width, gap_width, imh
             break
     return numWhiteKeys, whiteKeys
 
+
+#detect black keys on the binary image
 def detect_black_keys(im_bw, offset):
     white_key_len = im_bw.shape[0]
     im_top = im_bw[0:int(white_key_len/2), :]
@@ -198,7 +204,7 @@ def detect_black_keys(im_bw, offset):
 
     return blackKeys, numBlackKeys, black_notes
 
-
+#scan across image to collect black key regions
 def get_black_key_boundaries(white_key_len, im_top):
     blackKeys = np.zeros((36, 4))
     numBlackKeys = 0
