@@ -71,9 +71,8 @@ if __name__ == '__main__':
     pts_src = np.asarray(right_clicks)
     print "found corners:", right_clicks
     
-    base_img_rectified, params = preprocess.rectify_first(base_img, pts_src)
+    base_img_rectified, homography = preprocess.rectify_first(base_img, pts_src)
     #get the sobel of just the baseline image (no hands) to get lines between keys from Hough transform (Right now, key_lines is all lines returned by Hough)
-    print "params after first rectification:", params
     
     '''cv2.imshow('image', base_img_rectified)
     cv2.waitKey(0)
@@ -81,8 +80,9 @@ if __name__ == '__main__':
     '''
 
     #extract images from frames and rectifies them acording to params of first image
-    frames = preprocess.get_frames(video_name)
-    print "preprocessed frames"
+    #frames = preprocess.get_frames(video_name)
+    preprocess.get_and_rectify_frames(video_name, homography)
+    print "preprocessed and rectified frames"
 
     [binary_rectified_sobel, binary_rectified] = preprocess.getBinaryImages(base_img_rectified)
     #print "got binary"
@@ -91,15 +91,15 @@ if __name__ == '__main__':
     
     #print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
     black_key_width = np.average(blackKeys[:,3] - blackKeys[:,2])
-    print "width:", black_key_width
 
     #Mask off hands from each frame first? Then make it black and white?
-    #Rectify all the frames we need
-    frames = preprocess.rectify_all(frames, params) #ALSO TURNS TO GREYSCALE!! mask out hands first?
+    #Rectify all the frames we need #DONE IN GET_AND_RECTIFY_FRAMES!!!
+    #frames = preprocess.rectify_all(frames, params) #ALSO TURNS TO GREYSCALE!! mask out hands first?
+    #preprocess.rectify_all(video_name, params)
     print "all frames rectified"
     #Now detectNotesPressed
     #find light source based on shape of shadows?? then decide how shadows determine right or left key
-    key_x_coords = note_detection.allFrameDiffs(frames, black_key_width)
+    key_x_coords = note_detection.allFrameDiffs(video_name, base_img_rectified.shape, black_key_width)
     print "x_coords:", key_x_coords
 
     note_detection.map_to_key(key_x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes)

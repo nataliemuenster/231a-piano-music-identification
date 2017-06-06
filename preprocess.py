@@ -11,13 +11,15 @@ import matplotlib.image as mpimg
 import argparse
 #import pymouse #SARAH YOU NEED TO INSTALL THIS PROBABLY
 
+frame_interval = 5 #gather only every x num frames 
 
 #change output image names according to each video
 
-def get_frames(video_name):
+def get_and_rectify_frames(video_name, homography):
 	#print "Parse_video:", video
     video_path = "./data/videos/" + video_name + ".mp4"
     images_dir = "./data/" + video_name + "_images"
+    rectified_dir = "./data/" + video_name + "_rectified"
 
     #if not yet parsed, parse. Else just return images
 	
@@ -28,18 +30,21 @@ def get_frames(video_name):
         quit()
     
     #loops through all the images in the video directory
-    image_list = os.listdir(images_dir)
-    frames = []
-    frameNum = 0
-    for img_name in image_list:
-        img = cv2.imread(os.path.join(images_dir,img_name))
-        if img is not None and frameNum%5 == 0: #we gather only every 5 frames
-                img = img.astype(np.uint8)
-                #img = image_extraction.sobel(img)
-                frames.append(img)
-        frameNum += 1
-    return frames
+    if not os.path.exists(rectified_dir):
+        print "trying to rectify images"
+        os.mkdir(rectified_dir)
+        image_list = os.listdir(images_dir)
+        frameNum = 0
+        for img_name in image_list: #skips first image
+            img = cv2.imread(os.path.join(images_dir,img_name))
+            if img is not None and frameNum%frame_interval == 0: #we gather only every 5 frames
+                img_rectified = rectify_other(img, homography)
+                cv2.imwrite(rectified_dir + "/" + video_name + "-" + str((frameNum)).zfill(4) + "_rectified.jpg", img_rectified)
 
+            frameNum += 1
+    if len(os.listdir(rectified_dir)) == 0:
+        print "Please delete folder:", rectified_dir, "and try again."
+        quit()
 
 #Takes in an image of a piano, asks for the 4 corner points, and returns the rectified and cropped image, with consistent ratios of size of black to white keys
 def rectify_first(img, pts_src): #original base_img (img2 example is of size: 1280x720)
@@ -52,46 +57,27 @@ def rectify_first(img, pts_src): #original base_img (img2 example is of size: 12
     
     h, status = cv2.findHomography(pts_src, pts_dst)
     img_rectified = cv2.warpPerspective(img, h, (size[1], size[0]))
-    """
-    cv2.imshow('image', img_rectified)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    """
     
-    #cv2.imwrite("video_2-0001_rectified.jpg", img_rectified)
     params = np.array([pts_src, pts_dst])
-    return img_rectified, params
+    return img_rectified, h
 
+#CAN STREAMLINE H TOO, NOT JUST PARAMS!!!!
 #rectifies and converts to greyscale all images
-def rectify_all(frames, params):
-    size = frames[0].shape
-    for f in xrange(len(frames)):
-        frame = cv2.cvtColor(frames[f], cv2.COLOR_RGB2GRAY)
-        h, status = cv2.findHomography(params[0], params[1])
-        frames[f] = cv2.warpPerspective(frame, h, (size[1], size[0]))
-    return frames
+def rectify_other(img, homography):
+    size = img.shape
+    #img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) OpenCV reads images in 3 channels anyway
+    img = cv2.warpPerspective(img, homography, (size[1], size[0]))
+    return img
 
 
 def getBinaryImages(base_img):
     img_grey = cv2.cvtColor(base_img, cv2.COLOR_RGB2GRAY)
-    #cv2.imwrite("video_2-0001_grey.jpg", img_grey)
     thresh, img_binary = cv2.threshold(img_grey, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    #cv2.imwrite("video_2-0001_binary_no_sobel.jpg", img_binary)
     
     #now try applying Sobel first
     img_sobel = sobel(base_img)
-    #cv2.imwrite("video_2-0001_sobel.jpg", img_sobel)
     #apply thresholding to binarize image: http://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html
     thresh, img_binary_sobel = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    '''
-    cv2.imshow('image', img_binary)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    
-    cv2.imshow('image', img_binary_sobel)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    '''
     return img_binary_sobel, img_binary
 
 

@@ -14,26 +14,32 @@ from skimage.morphology import label
 threshold = 50
 pixel_buffer = 10
 
-def allFrameDiffs(frames, black_key_width):
-	x_coords = []
-	height = frames[0].shape[0]
-	width = frames[0].shape[1]
+def allFrameDiffs(video_name, size, black_key_width):
+	images_dir = "./data/" + video_name + "_rectified" #using the rectified images
+	image_list = os.listdir(images_dir)
+	
+	x_coords = [None]*len(image_list)
+	height = size[0]
+	width = size[1]
 	crop_height = 2*height/3
 	x_height = crop_height/2
 	min_dist = black_key_width/2 #min distance between two valid different pressed keys (so same key not counted twice, but also so a black and neighboring white key can be detected)
-	print "frame size:", frames[0][0:crop_height, :].shape
-	for f1 in xrange(len(frames)-1): #loop over pairs of frames, already x frames apart
-		crop_frame1 = frames[f1][0:crop_height, :]
-		crop_frame2 = frames[f1+1][0:crop_height, :]
-		#if f1 == 6:
-		#	cv2.imwrite("video_2-cropped_indiff.jpg", crop_frame1)
-		diff = cv2.subtract(crop_frame1,crop_frame2)
-		#cv2.imwrite("video_2-cropped_diff" + str(f1) + ".jpg", diff)
+	
+	frameNum = 0
+	prev_frame = cv2.imread(os.path.join(images_dir,image_list[0]), cv2.IMREAD_GRAYSCALE) #first image
+	prev_crop = prev_frame[0:crop_height, :]
+    #loop over pairs of frames, already x frames apart
+	
+	for f1 in xrange(1, len(image_list)):
+		curr_frame = cv2.imread(os.path.join(images_dir,image_list[f1]), cv2.IMREAD_GRAYSCALE)
+		curr_crop = curr_frame[0:crop_height, :]
+		
+		diff = cv2.subtract(prev_crop, curr_crop)
 		key_xs = []
 		pixel = 0
 
 		key_xs = [i for i,val in enumerate(diff[x_height, :]) if val > threshold]
-		print "initial key_xs for ", f1, "=", key_xs
+		#print "initial key_xs for ", f1, "=", key_xs
 		#eliminate duplicates in list if they are too close to each other:
 		if len(key_xs) > 1:
 			for i in xrange(len(key_xs)-1, 0, -1): #iterate backwards
@@ -41,9 +47,10 @@ def allFrameDiffs(frames, black_key_width):
 					key_xs.pop(i)#only keep first one found (is better way to average them??)
 
         #maybe take a sampling of two different y heights to see if it's just in black, or also white??
-		print "filtered key_xs for ", f1, " = ", key_xs
-		x_coords.append(key_xs)
-
+		#print "filtered key_xs for ", f1-1, " = ", key_xs
+		prev_crop = curr_crop
+		x_coords[f1-1] = key_xs
+	#print "x_coords:", x_coords
 	x_coords = list(filter(None, x_coords))
 	return np.asarray(x_coords) #list of lists -- each index is a frame difference, which may have 0 or more keys pressed
 
@@ -86,7 +93,7 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
                 #if it matches no black key it must be a white key
                 index = np.intersect1d(np.where(whiteKeys[:, 2] < x)[0], np.where(whiteKeys[:, 3] > x)[0])
                 
-                if len(index) != 0:
+                if len(index) == 0:
                     print "could not detect note"
                 
                 else:
