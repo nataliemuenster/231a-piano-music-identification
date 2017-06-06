@@ -79,9 +79,7 @@ if __name__ == '__main__':
 
     #error check input
     while len(right_clicks) != 4:
-        print "before right_clicks ", right_clicks
         right_clicks = list()
-        print "after right_clicks ", right_clicks
         print "Please reselect corners taking care to choose only 4 points"
         get_corners(base_img)
 
@@ -119,7 +117,7 @@ if __name__ == '__main__':
     key_x_coords = note_detection.allFrameDiffs(video_name, base_img_rectified.shape, black_key_width)
     #print "x_coords:", key_x_coords
 
-    note_detection.map_to_key(key_x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes)
+    notes = note_detection.map_to_key(key_x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes)
     
     
 
