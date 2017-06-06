@@ -78,7 +78,7 @@ if __name__ == '__main__':
     get_corners(base_img)
 
     #error check input
-    if len(right_clicks) != 4:
+    while len(right_clicks) != 4:
         print "before right_clicks ", right_clicks
         right_clicks = list()
         print "after right_clicks ", right_clicks
