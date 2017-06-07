@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.image as mpimg
 import argparse
-#import pymouse #SARAH YOU NEED TO INSTALL THIS PROBABLY
 
 frame_interval = 5 #gather only every x num frames 
 

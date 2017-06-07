@@ -12,7 +12,7 @@ from skimage.segmentation import clear_border
 from skimage.morphology import label
 
 threshold = 50
-pixel_buffer = 5
+pixel_buffer = 7
 
 def allFrameDiffs(video_name, size, black_key_width):
 	images_dir = "./data/" + video_name + "_rectified" #using the rectified images
@@ -77,5 +77,4 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
                     simultaneous_notes.append(note)
         notes.append(simultaneous_notes)
 
-    print notes, len(notes)
     return notes
