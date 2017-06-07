@@ -31,9 +31,10 @@ def detect_keys(img_binary, img_binary_sobel, start_key):
 def detect_white_keys(im_bw, startKey):
     imheight = im_bw.shape[0]
     
-    cv2.imshow('image', im_bw)
+    '''cv2.imshow('image', im_bw)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    '''
     
     im_bottom = im_bw[int(imheight - (imheight/5)):imheight, :]
     cv2.imwrite("./data/im_bottom.jpg", im_bottom)
