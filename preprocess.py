@@ -9,11 +9,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.image as mpimg
 import argparse
-#import pymouse #SARAH YOU NEED TO INSTALL THIS PROBABLY
 
-frame_interval = 5 #gather only every x num frames 
-
-#change output image names according to each video
+frame_interval = 3 #gather only every x num frames 
 
 def get_and_rectify_frames(video_name, homography):
 	#print "Parse_video:", video
@@ -21,11 +18,9 @@ def get_and_rectify_frames(video_name, homography):
     images_dir = "./data/" + video_name + "_images"
     rectified_dir = "./data/" + video_name + "_rectified"
 
-    #if not yet parsed, parse. Else just return images
-	
+    #if not yet parsed, throw error. Else just return images
     if not os.path.exists(images_dir):
-        #os.mkdir(images_dir)
-        #process video and put all frames in this dir
+        #User must process video and put all frames in this dir
         print "Please extract the frames from the video using ffmpeg, then try again."
         quit()
     
@@ -37,7 +32,7 @@ def get_and_rectify_frames(video_name, homography):
         frameNum = 0
         for img_name in image_list: #skips first image
             img = cv2.imread(os.path.join(images_dir,img_name))
-            if img is not None and frameNum%frame_interval == 0: #we gather only every 5 frames
+            if img is not None and frameNum%frame_interval == 0: #gather only every so many frames
                 img_rectified = rectify_other(img, homography)
                 cv2.imwrite(rectified_dir + "/" + video_name + "-" + str((frameNum)).zfill(4) + "_rectified.jpg", img_rectified)
 
@@ -46,14 +41,12 @@ def get_and_rectify_frames(video_name, homography):
         print "Please delete folder:", rectified_dir, "and try again."
         quit()
 
-#Takes in an image of a piano, asks for the 4 corner points, and returns the rectified and cropped image, with consistent ratios of size of black to white keys
-def rectify_first(img, pts_src): #original base_img (img2 example is of size: 1280x720)
-    #how to make a GUI to show first image and let user click corners:
+#Displays the first frame of the video, asks for the 4 corner points, and returns the rectified and cropped image, with consistent ratios of size of black to white keys
+def rectify_first(img, pts_src):
     size = img.shape
     #pts_src = np.array([[0,303],[0,599],[1243,315],[1243,618]]).astype(float) #in x,y
     pts_src = pts_src.astype(float)
-    pts_dst = np.array([[0,0],[0,size[0]],[size[1],0],[size[1],size[0]]]).astype(float) #in x,y
-    #print "pts_src, pts_dst", pts_src, pts_dst
+    pts_dst = np.array([[0,0],[0,size[0]],[size[1],0],[size[1],size[0]]]).astype(float) #x,y
     
     h, status = cv2.findHomography(pts_src, pts_dst)
     img_rectified = cv2.warpPerspective(img, h, (size[1], size[0]))
@@ -61,8 +54,7 @@ def rectify_first(img, pts_src): #original base_img (img2 example is of size: 12
     params = np.array([pts_src, pts_dst])
     return img_rectified, h
 
-#CAN STREAMLINE H TOO, NOT JUST PARAMS!!!!
-#rectifies and converts to greyscale all images
+#rectification method for images after homography is known
 def rectify_other(img, homography):
     size = img.shape
     #img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) OpenCV reads images in 3 channels anyway
@@ -81,13 +73,13 @@ def getBinaryImages(base_img):
     return img_binary_sobel, img_binary
 
 
-#from https://github.com/abidrahmank/OpenCV2-Python/blob/master/Official_Tutorial_Python_Codes/3_imgproc/sobel.py
+#adapted from https://github.com/abidrahmank/OpenCV2-Python/blob/master/Official_Tutorial_Python_Codes/3_imgproc/sobel.py
 def sobel(img):
 	scale = 1
 	delta = 0
 	ddepth = cv2.CV_16S
-	#img = cv2.imread(img)
-	img = cv2.GaussianBlur(img,(3,3),0) #idk what these numbers mean
+
+	img = cv2.GaussianBlur(img,(3,3),0)
 	gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 	# Gradient-X
 	grad_x = cv2.Sobel(gray,ddepth,1,0, ksize = 3, scale = scale, delta = delta, borderType = cv2.BORDER_DEFAULT)
@@ -95,7 +87,7 @@ def sobel(img):
 	# Gradient-Y
 	grad_y = cv2.Sobel(gray,ddepth,0,1, ksize = 3, scale = scale, delta = delta, borderType = cv2.BORDER_DEFAULT)
 	#grad_y = cv2.Scharr(gray,ddepth,0,1)
-	abs_grad_x = cv2.convertScaleAbs(grad_x)   # converting back to uint8
+	abs_grad_x = cv2.convertScaleAbs(grad_x) #converting back to uint8
 	abs_grad_y = cv2.convertScaleAbs(grad_y)
 	dst = cv2.addWeighted(abs_grad_x,0.5,abs_grad_y,0.5,0)
 	return dst

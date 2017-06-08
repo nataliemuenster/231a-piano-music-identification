@@ -74,8 +74,8 @@ if __name__ == '__main__':
         print
         start_key = input("Please enter the note corresponding to the left most white key with the number corresponding to its octave in the format (ex: 'A3') with quotes around the two characters: ")
 
-    base_img = cv2.imread(os.path.join(images_dir,base_img_name)) #a static variable above main
-    base_img = base_img.astype(np.uint8) #need this??
+    base_img = cv2.imread(os.path.join(images_dir,base_img_name))
+    #base_img = base_img.astype(np.uint8) #need this??
     get_corners(base_img)
 
     #error check input

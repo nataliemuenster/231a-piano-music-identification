@@ -11,11 +11,11 @@ import matplotlib.patches as patches
 from skimage.segmentation import clear_border
 from skimage.morphology import label
 
-threshold = 50
+threshold = 40
 pixel_buffer = 5
 
 def allFrameDiffs(video_name, size, black_key_width):
-	images_dir = "./data/" + video_name + "_rectified" #using the rectified images
+	images_dir = "./data/" + video_name + "_rectified"
 	image_list = os.listdir(images_dir)
 	
 	x_coords = [None]*len(image_list)
@@ -43,7 +43,7 @@ def allFrameDiffs(video_name, size, black_key_width):
 		if len(key_xs) > 1:
 			for i in xrange(len(key_xs)-1, 0, -1): #iterate backwards
 				if abs(key_xs[i] - key_xs[i-1]) < min_dist:
-					key_xs.pop(i)#only keep first one found (current method for averaging)
+					key_xs.pop(i) #only keep first one found (current method for averaging)
 
 		prev_crop = curr_crop
 		x_coords[f1-1] = key_xs
