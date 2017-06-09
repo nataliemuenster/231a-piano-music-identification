@@ -69,9 +69,6 @@ def getBinaryImages(base_img):
     img_sobel = sobel(base_img)
     thresh, img_binary_sobel = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     return img_binary_sobel, img_binary
-    
-
-    return canny, img_binary
 
 
 #adapted from https://github.com/abidrahmank/OpenCV2-Python/blob/master/Official_Tutorial_Python_Codes/3_imgproc/sobel.py
@@ -81,8 +78,7 @@ def sobel(img):
 	ddepth = cv2.CV_16S
 
 	img = cv2.GaussianBlur(img,(3,3),0)
-	#gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-	gray = img
+	gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     # Gradient-X
 	grad_x = cv2.Sobel(gray,ddepth,1,0, ksize = 3, scale = scale, delta = delta, borderType = cv2.BORDER_DEFAULT)
 	# Gradient-Y
