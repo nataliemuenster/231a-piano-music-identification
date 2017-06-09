@@ -14,27 +14,24 @@ def totalError(video_name, detected):
     print "correct length vs our length:", len(true_keys), len(detected_keys)
     print "correct:", true_keys
     print "ours:", detected_keys
-
+    return detected_keys, true_keys
 
 # you may also want to remove whitespace characters like `\n` at the end of each line
 #content = [x.strip() for x in content] 
 #need to strip ""? spaces too
 
 
-#def calculateDist(true, detected):
+#Process minimum edit distance using Levenshtein Distance between the true notes and detected ones
+def calculateDistance(detected, true):
+    if len(detected) > 0 and len(true) == 0: #if no keys actually played
+        return len(detected)
+    elif len(detected) == 0 and len(true) > 0: #if no keys detected
+        return len(true)
 
-#Process minimum edit distance using Levenshtein Distance between quote inputs and one title for spellchecking
-#Limits edit distance to 4 before it automatically fails
-'''def calculateDistance(true, detected):
-    if len(quote) > 0 and len(title) == 0:
-        return len(quote)
-    elif len(quote) == 0 and len(title) > 0:
-        return len(title)
-
-    prevRow = range(len(title) + 1)
-    for i, m in enumerate(quote):
+    prevRow = range(len(true) + 1)
+    for i, m in enumerate(detected):
         currRow = [i + 1]
-        for j, n in enumerate(title):
+        for j, n in enumerate(true):
             insertions = prevRow[j + 1] + 1 
             deletions = currRow[j] + 1      
             addSubst = (m != n)
@@ -43,6 +40,6 @@ def totalError(video_name, detected):
         prevRow = currRow
 
     return prevRow[-1]
-'''
+
 
 

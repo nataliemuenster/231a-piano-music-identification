@@ -98,29 +98,21 @@ if __name__ == '__main__':
     #extract images from frames and rectifies them acording to params of first image
     #frames = preprocess.get_frames(video_name)
     preprocess.get_and_rectify_frames(video_name, homography)
-    print "preprocessed and rectified frames"
 
+    #Step 2: locate keys and map to image coordinates
     [binary_rectified_sobel, binary_rectified] = preprocess.getBinaryImages(base_img_rectified)
-    #print "got binary"
-
     [whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes] = key_detection.detect_keys(binary_rectified, binary_rectified_sobel, start_key)
-    
-    #print whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes
     black_key_width = np.average(blackKeys[:,3] - blackKeys[:,2])
 
-    #Mask off hands from each frame first? Then make it black and white?
-    #Rectify all the frames we need #DONE IN GET_AND_RECTIFY_FRAMES!!!
-    #frames = preprocess.rectify_all(frames, params) #ALSO TURNS TO GREYSCALE!! mask out hands first?
-    #preprocess.rectify_all(video_name, params)
-    print "all frames rectified"
-    #Now detectNotesPressed
-    #find light source based on shape of shadows?? then decide how shadows determine right or left key
+    #Step 3: detect keys pressed and identify keys by mapping coordinates of differences
     key_x_coords = note_detection.allFrameDiffs(video_name, base_img_rectified.shape, black_key_width)
-    #print "x_coords:", key_x_coords
-
     notes = note_detection.map_to_key(key_x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes)
 
-    evaluation.totalError(video_name, notes)
+    #Evaluation
+    detected, true = evaluation.totalError(video_name, notes)
+    editDist = evaluation.calculateDistance(detected, true)
+    print "Edit distance:", editDist
+    #print "Accuracy (measured in edit distance):"
     
     
 
