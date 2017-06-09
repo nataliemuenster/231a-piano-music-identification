@@ -69,6 +69,9 @@ def getBinaryImages(base_img):
     img_sobel = sobel(base_img)
     thresh, img_binary_sobel = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     return img_binary_sobel, img_binary
+    
+
+    return canny, img_binary
 
 
 #adapted from https://github.com/abidrahmank/OpenCV2-Python/blob/master/Official_Tutorial_Python_Codes/3_imgproc/sobel.py

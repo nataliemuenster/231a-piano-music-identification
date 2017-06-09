@@ -16,9 +16,9 @@ if __name__ == '__main__':
 	#cv2.imwrite("./slides_img1_rect.jpg", img1_rect)
 	img2_rect = preprocess.rectify_other(img2, homography)
 	#cv2.imwrite("./slides_img2_rect.jpg", img2_rect)
-	thresh, img1_binary = cv2.threshold(img1_rect, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-	canny = cv2.Canny(img1_binary,100,200)
-	#cv2.imwrite("./sandbox_canny.jpg", canny)
+	#thresh, img1_binary = cv2.threshold(img1_rect, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+	canny = cv2.Canny(img1_rect,100,200)
+	#cv2.imwrite("./sandbox_canny2.jpg", canny)
 
 	sobel = preprocess.sobel(img1_binary)
 	thresh, img1_sobel = cv2.threshold(sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
@@ -33,3 +33,8 @@ if __name__ == '__main__':
 	diff = cv2.subtract(crop1, crop2)
 	cv2.imwrite("./slides_diff1.jpg", diff)
 	'''
+
+	''' # to try canny instead of sobel in code
+	canny = cv2.Canny(img_grey,100,200)
+    cv2.imwrite("./preprocess_canny.jpg", canny)
+    '''
