@@ -14,6 +14,7 @@ max_RGB_value = 255
 
 #User can change this for whichever video they want
 video_name = "video_2" #url2 = "https://www.youtube.com/watch?v=CQTim0KdILE"
+#First white key is D2
 
 #the [x, y] for each right-click event will be stored here
 right_clicks = list()
