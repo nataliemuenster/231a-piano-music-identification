@@ -11,6 +11,7 @@ import matplotlib.patches as patches
 from skimage.segmentation import clear_border
 from skimage.morphology import label
 
+
 threshold = 40
 pixel_buffer = 5
 
@@ -77,5 +78,4 @@ def map_to_key(x_coords, whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white
                     simultaneous_notes.append(note)
         notes.append(simultaneous_notes)
 
-    #print notes, len(notes)
     return notes

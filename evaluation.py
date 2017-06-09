@@ -16,11 +16,6 @@ def totalError(video_name, detected):
     print "ours:", detected_keys
     return detected_keys, true_keys
 
-# you may also want to remove whitespace characters like `\n` at the end of each line
-#content = [x.strip() for x in content] 
-#need to strip ""? spaces too
-
-
 #Process minimum edit distance using Levenshtein Distance between the true notes and detected ones
 def calculateDistance(detected, true):
     if len(detected) > 0 and len(true) == 0: #if no keys actually played

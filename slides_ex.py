@@ -2,9 +2,12 @@
 import numpy as np
 import cv2
 import preprocess
+import evaluation
 
 if __name__ == '__main__':
-	pts_src = np.asarray([[0,303],[0,599],[1243,315],[1243,618]])
+	dist = evaluation.calculateDistance(["A3", "B4", "d5"], ["A3", "B4", "c5"])
+	print dist
+	'''pts_src = np.asarray([[0,303],[0,599],[1243,315],[1243,618]])
 	base_img = img1 = cv2.imread("./data/video_2_images_full/video_2-0001.jpg")
 	base_img_rectified, homography = preprocess.rectify_first(base_img, pts_src)
 
@@ -23,3 +26,4 @@ if __name__ == '__main__':
 	crop2 = gray2[0:crop_height, :]
 	diff = cv2.subtract(crop1, crop2)
 	cv2.imwrite("./slides_diff1.jpg", diff)
+	'''

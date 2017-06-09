@@ -24,6 +24,8 @@ video_name = "video_2" #User can change this for whichever video they want
 right_clicks = list()
 
 #this function will be called whenever the mouse is right-clicked
+
+
 '''def mouse_callback(event, x, y, flags, params):
     #right-click event value is 2
     if event == 2:
@@ -31,13 +33,16 @@ right_clicks = list()
         
         #store the coordinates of the right-click event
         right_clicks.append([x, y])
+
 '''
+
 
 def get_corners(img):
     print
     print "Please click on the four corners that define the keyboard in first image."
     print "Use two fingers when clicking to select points"
     print "Select in this order: top right, bottom right, top left, bottom left"
+
     
     '''scale_width = 640 / img.shape[1]
     scale_height = 480 / img.shape[0]
@@ -57,7 +62,7 @@ def get_corners(img):
     
     global right_clicks
     right_clicks.extend([[0,303],[0,599],[1243,315],[1243,618]])
-    
+
 
 if __name__ == '__main__':
     images_dir = "./data/" + video_name + "_images"
@@ -102,6 +107,7 @@ if __name__ == '__main__':
     #Step 2: locate keys and map to image coordinates
     [binary_rectified_sobel, binary_rectified] = preprocess.getBinaryImages(base_img_rectified)
     [whiteKeys, numWhiteKeys, blackKeys, numBlackKeys, white_notes, black_notes] = key_detection.detect_keys(binary_rectified, binary_rectified_sobel, start_key)
+
     black_key_width = np.average(blackKeys[:,3] - blackKeys[:,2])
 
     #Step 3: detect keys pressed and identify keys by mapping coordinates of differences
@@ -114,7 +120,7 @@ if __name__ == '__main__':
     print "Edit distance:", editDist
     #print "Accuracy (measured in edit distance):"
     
-    
+    print notes
 
     print "done with main"
 

@@ -57,7 +57,6 @@ def rectify_first(img, pts_src):
 #rectification method for images after homography is known
 def rectify_other(img, homography):
     size = img.shape
-    #img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) OpenCV reads images in 3 channels anyway
     img = cv2.warpPerspective(img, homography, (size[1], size[0]))
     return img
 
@@ -66,9 +65,8 @@ def getBinaryImages(base_img):
     img_grey = cv2.cvtColor(base_img, cv2.COLOR_RGB2GRAY)
     thresh, img_binary = cv2.threshold(img_grey, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     
-    #now try applying Sobel first
+    #Apply Sobel first, then thresholding to binarize image
     img_sobel = sobel(base_img)
-    #apply thresholding to binarize image: http://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html
     thresh, img_binary_sobel = cv2.threshold(img_sobel, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     return img_binary_sobel, img_binary
 
@@ -83,10 +81,8 @@ def sobel(img):
 	gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 	# Gradient-X
 	grad_x = cv2.Sobel(gray,ddepth,1,0, ksize = 3, scale = scale, delta = delta, borderType = cv2.BORDER_DEFAULT)
-	#grad_x = cv2.Scharr(gray,ddepth,1,0)
 	# Gradient-Y
 	grad_y = cv2.Sobel(gray,ddepth,0,1, ksize = 3, scale = scale, delta = delta, borderType = cv2.BORDER_DEFAULT)
-	#grad_y = cv2.Scharr(gray,ddepth,0,1)
 	abs_grad_x = cv2.convertScaleAbs(grad_x) #converting back to uint8
 	abs_grad_y = cv2.convertScaleAbs(grad_y)
 	dst = cv2.addWeighted(abs_grad_x,0.5,abs_grad_y,0.5,0)

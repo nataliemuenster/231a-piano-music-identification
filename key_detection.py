@@ -15,6 +15,7 @@ from string import ascii_lowercase
 WB_key_len_ratio = 0.65
 threshold = 0.8
 wk_min_width = 15
+gap_max = 7
 
 
 def detect_keys(img_binary, img_binary_sobel, start_key):
@@ -36,16 +37,16 @@ def detect_white_keys(im_bw, startKey):
     '''
     
     im_bottom = im_bw[int(imheight - (imheight/5)):imheight, :]
+    cv2.imwrite("./data/im_bottom.jpg", im_bottom)
+
 
     [gap_width, wk_width, start] = findAverageWidths(im_bottom)
-    print gap_width, wk_width
 
     [numWhiteKeys, whiteKeys] = workTowardRight(start, wk_width, gap_width, im_bottom.shape[1], imheight)
     [numWhiteKeys, whiteKeys] = workTowardLeft(whiteKeys, numWhiteKeys, start, wk_width, gap_width, imheight)
     
     sorted_white_keys = organizeWhiteKeys(whiteKeys)
 
-    print "num white keys ", sorted_white_keys.shape[0], sorted_white_keys
     white_notes = getWhiteNotes(startKey, sorted_white_keys)
 
     return sorted_white_keys, numWhiteKeys, white_notes
@@ -64,33 +65,34 @@ def findAverageWidths(im_bottom):
         if firstKey == True:
             #if starting in middle of key, move to closest start next key
             if im_bottom[int(im_bottom.shape[0]/2), pixel] < threshold:
-                while im_bottom[int(im_bottom.shape[0]/2), pixel] < threshold: #move to end of key you're in the middle of
+                while im_bottom[int(im_bottom.shape[0]/2), pixel] < threshold: #move to end of the key you're in the middle of
                     pixel += 1
-                
-                while im_bottom[int(im_bottom.shape[0]/2), pixel] > threshold: #move past gap
-                    pixel += 1
-            
+                pixel = movePastBoundaryAndGap(im_bottom, pixel, threshold)
                 start = pixel
                 start_edge = pixel
-            else:  #if starting in the middle of a gap between keys, move to closest start of next key
-                while im_bottom[int(im_bottom.shape[0]/2), pixel] > threshold: #move past gap
-                    pixel += 1
+            else: #if starting in the middle of a gap between keys, move to closest start of next key
+                pixel = movePastBoundaryAndGap(im_bottom, pixel, threshold)
                 start = pixel
                 start_edge = pixel
-    
+
             firstKey = False
-        
         else:
-            while im_bottom[int(im_bottom.shape[0]/2), pixel] < threshold: #move to end edge of keys (key is black in binary sobel)
-                pixel += 1
+            pixel = moveThroughKey(im_bottom, pixel, threshold)
+
             if (abs(start_edge - pixel) > wk_min_width): #if you detected a key
                 widths.append(abs(start_edge - pixel))
+                print "start_edge, pixel ", start_edge, pixel
                 numSampleKeys += 1
-                #move past white gap to get to next key
+                #move past white-black-white gap to get to next key
                 gap_size = 0
-                while im_bottom[int(im_bottom.shape[0]/2), pixel] > threshold:
-                    gap_size += 1
-                    pixel += 1
+
+                while im_bottom[int(im_bottom.shape[0]/2), pixel] < threshold:
+                    if gap_size > gap_max:
+                        break
+                    else :
+                        gap_size += 1
+                        pixel += 1
+
                 gap_sizes.append(gap_size)
                 numGaps += 1
                 start_edge = pixel
@@ -102,7 +104,27 @@ def findAverageWidths(im_bottom):
     gap_width = sum(gap_sizes)/numGaps
     wk_width = sum(widths)/numSampleKeys
 
+    print gap_width, wk_width, start
+
     return gap_width, wk_width, start
+
+def movePastBoundaryAndGap(im_bottom, pixel, threshold):
+    beginning = pixel
+    while abs(beginning - pixel) < gap_max:
+        while im_bottom[int(im_bottom.shape[0]/2), pixel] > threshold: #move past white edge
+            pixel += 1
+        while im_bottom[int(im_bottom.shape[0]/2), pixel] < threshold: #move past black gap
+            pixel += 1
+    return pixel
+
+def moveThroughKey(im_bottom, pixel, threshold):
+    while im_bottom[int(im_bottom.shape[0]/2), pixel] > threshold : #start white edge
+        pixel += 1
+    while im_bottom[int(im_bottom.shape[0]/2), pixel] < threshold: #move past black middle
+        pixel += 1
+    while im_bottom[int(im_bottom.shape[0]/2), pixel] > threshold : #end white edge
+        pixel += 1
+    return pixel
 
 #correlate each key with its note based on the left-most-note passed in
 def getWhiteNotes(startKey, whiteKeys):
