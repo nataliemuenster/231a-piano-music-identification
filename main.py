@@ -12,9 +12,6 @@ import evaluation
 videos_dir = "./data/videos"
 max_RGB_value = 255
 
-#url1 = "https://www.youtube.com/watch?v=9Pk0R8OWg0k"
-#video_path = "./data/videos/video_1.mp4"
-
 #url2 = "https://www.youtube.com/watch?v=CQTim0KdILE"
 video_name = "video_2" #User can change this for whichever video they want
 
