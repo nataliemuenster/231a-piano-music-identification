@@ -12,17 +12,13 @@ import evaluation
 videos_dir = "./data/videos"
 max_RGB_value = 255
 
-#url2 = "https://www.youtube.com/watch?v=CQTim0KdILE"
-video_name = "video_2" #User can change this for whichever video they want
-
-
+#User can change this for whichever video they want
+video_name = "video_2" #url2 = "https://www.youtube.com/watch?v=CQTim0KdILE"
 
 #the [x, y] for each right-click event will be stored here
 right_clicks = list()
 
 #this function will be called whenever the mouse is right-clicked
-
-
 '''def mouse_callback(event, x, y, flags, params):
     #right-click event value is 2
     if event == 2:
@@ -32,7 +28,6 @@ right_clicks = list()
         right_clicks.append([x, y])
 
 '''
-
 
 def get_corners(img):
     print
@@ -76,8 +71,8 @@ if __name__ == '__main__':
         print
         start_key = input("Please enter the note corresponding to the left most white key with the number corresponding to its octave in the format (ex: 'A3') with quotes around the two characters: ")
 
+    #Step 1: Preprocess
     base_img = cv2.imread(os.path.join(images_dir,base_img_name))
-    #base_img = base_img.astype(np.uint8) #need this??
     get_corners(base_img)
 
     #error check input
@@ -89,16 +84,10 @@ if __name__ == '__main__':
     pts_src = np.asarray(right_clicks)
     print "found corners:", right_clicks
     
+    #Get the homography matrix for just the base image (w/o hands), which we can later use to rectify the rest of the images
     base_img_rectified, homography = preprocess.rectify_first(base_img, pts_src)
-    #get the sobel of just the baseline image (no hands) to get lines between keys from Hough transform (Right now, key_lines is all lines returned by Hough)
     
-    '''cv2.imshow('image', base_img_rectified)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    '''
-
-    #extract images from frames and rectifies them acording to params of first image
-    #frames = preprocess.get_frames(video_name)
+    #extract images from frames and rectifies them according to params of first image
     preprocess.get_and_rectify_frames(video_name, homography)
 
     #Step 2: locate keys and map to image coordinates
@@ -115,9 +104,8 @@ if __name__ == '__main__':
     detected, true = evaluation.totalError(video_name, notes)
     editDist = evaluation.calculateDistance(detected, true)
     print "Edit distance:", editDist
-    #print "Accuracy (measured in edit distance):"
     
-    print notes
+    #print notes
 
     print "done with main"
 

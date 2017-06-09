@@ -12,8 +12,8 @@ def totalError(video_name, detected):
         detected_keys.extend(pressed)
 
     print "correct length vs our length:", len(true_keys), len(detected_keys)
-    print "correct:", true_keys
-    print "ours:", detected_keys
+    #print "correct:", true_keys
+    #print "ours:", detected_keys
     return detected_keys, true_keys
 
 #Process minimum edit distance using Levenshtein Distance between the true notes and detected ones

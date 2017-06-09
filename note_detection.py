@@ -12,7 +12,7 @@ from skimage.segmentation import clear_border
 from skimage.morphology import label
 
 
-threshold = 40
+threshold = 50
 pixel_buffer = 5
 
 def allFrameDiffs(video_name, size, black_key_width):
