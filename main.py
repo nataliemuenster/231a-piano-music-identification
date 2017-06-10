@@ -20,15 +20,14 @@ video_name = "video_2" #url2 = "https://www.youtube.com/watch?v=CQTim0KdILE"
 right_clicks = list()
 
 #this function will be called whenever the mouse is right-clicked
-'''def mouse_callback(event, x, y, flags, params):
+def mouse_callback(event, x, y, flags, params):
     #right-click event value is 2
     if event == 2:
         global right_clicks
-        
         #store the coordinates of the right-click event
         right_clicks.append([x, y])
 
-'''
+
 
 def get_corners(img):
     print
@@ -37,7 +36,7 @@ def get_corners(img):
     print "Select in this order: top right, bottom right, top left, bottom left"
 
     
-    '''scale_width = 640 / img.shape[1]
+    scale_width = 640 / img.shape[1]
     scale_height = 480 / img.shape[0]
     scale = min(scale_width, scale_height)
     window_width = int(img.shape[1] * scale)
@@ -51,10 +50,10 @@ def get_corners(img):
     cv2.imshow('image', img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    '''
     
-    global right_clicks
-    right_clicks.extend([[0,303],[0,599],[1243,315],[1243,618]])
+    #if GUI isn't working: hard-coded for video_2:
+    #global right_clicks
+    #right_clicks.extend([[0,303],[0,599],[1243,315],[1243,618]])
 
 
 if __name__ == '__main__':
@@ -105,8 +104,4 @@ if __name__ == '__main__':
     detected, true = evaluation.totalError(video_name, notes)
     editDist = evaluation.calculateDistance(detected, true)
     print "Edit distance:", editDist
-    
-    #print notes
-
-    print "done with main"
 
