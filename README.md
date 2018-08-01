@@ -1,4 +1,5 @@
 CS231a final project: Music Note Identification from Video
+
 Authors: Sarah Radzihovsky and Natalie Muenster
 
 Our project paper can be found [here] (https://www.overleaf.com/read/zhdvfwgqwkpw)
