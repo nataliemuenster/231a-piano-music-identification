@@ -6,7 +6,7 @@ Our project paper can be found here: (https://www.overleaf.com/read/gfnnvjzbckrp
 
 This project is a tool that enables a user to extract notes from a chosen video of someone playing piano. This process is done in three steps: 1) Preprocessing the video, 2) locating the visible keys, and 3) mapping the pressed keys to their corresponding notes.
 
-##Preprocessing
+## Preprocessing
 
 1. Submit your video
 ...* In order to use this tool, your chosen video must be downloaded and placed in the video folder of the provided data directory. If you would like to use a video from Youtube, you should download it from Youtube using youtube-dl (usage: youtube-dl -f [format number] -o video_1 "link"), format number determined from running youtube-dl with flag -F and url.
