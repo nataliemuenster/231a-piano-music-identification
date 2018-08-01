@@ -1,4 +1,6 @@
 CS231a final project: Music Note Identification from Video
+Authors: Sarah Radzihovsky and Natalie Muenster
+
 Our project paper can be found [here] (https://www.overleaf.com/read/zhdvfwgqwkpw)
 
 This project is a tool that enables a user to extract notes from a chosen video of someone playing piano. This process is done in three steps: 1) Preprocessing the video, 2) locating the visible keys, and 3) mapping the pressed keys to their corresponding notes.
